@@ -1,5 +1,5 @@
 
-#include "pch.h"
+#include <gtest/gtest.h>
 
 TEST(TestCaseName, TestName) 
 {
