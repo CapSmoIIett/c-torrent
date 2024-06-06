@@ -5,7 +5,7 @@ cmake_minimum_required (VERSION 3.8)
 
 project (c-torrent VERSION 0.1 LANGUAGES CXX)
 
-#include(CTest)
+include(CTest)
 
 add_subdirectory (c-torrent)
 add_subdirectory (tests)

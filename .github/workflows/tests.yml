@@ -149,10 +149,6 @@ jobs:
           ninja --version
           cmake --version
 
-      - uses: Bacondish2023/setup-googletest@v1
-        with:
-          tag: v1.14.0
-          
       - name: Configure
         shell: bash
         run: |
