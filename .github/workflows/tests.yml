@@ -176,7 +176,7 @@ jobs:
       - name: Run tests 2
         shell: bash
         run: |
-          cd bin 
+          cd instdir 
           ls
 
       - name: Pack
