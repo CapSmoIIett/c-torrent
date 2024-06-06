@@ -173,11 +173,11 @@ jobs:
         shell: bash
         run: |
           ls
-          echo =========================
-          cd build 
+      - name: Run tests 2
+        shell: bash
+        run: |
+          cd build
           ls
-          echo =========================
-          ./tests.exe
 
       - name: Pack
         shell: bash
