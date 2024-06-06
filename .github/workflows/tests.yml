@@ -172,11 +172,11 @@ jobs:
       - name: Run tests
         shell: bash
         run: |
-          ls
+          cd tests
+          cd tests
       - name: Run tests 2
         shell: bash
         run: |
-          cd instdir 
           ls
 
       - name: Pack
