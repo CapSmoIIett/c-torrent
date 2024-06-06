@@ -7,4 +7,5 @@ project (c-torrent VERSION 0.1 LANGUAGES CXX)
 
 include(CTest)
 
+add_subdirectory (c-torrent/)
 add_subdirectory (tests/)
