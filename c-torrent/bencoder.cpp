@@ -1,12 +1,14 @@
 #include "bencoder.h"
 
 
+/*
 static std::string Bencoder::encode()
 {
     return "";
 }
+*/
 
-static std::vector<std::string> Bencoder::dencode(std::string input)
+std::vector<std::string> Bencoder::decode(std::string input)
 {
     if (3 > input.size())
         return {""};
@@ -15,11 +17,13 @@ static std::vector<std::string> Bencoder::dencode(std::string input)
         size_t colon_index = input.find(':');
 
         if (colon_index == std::string::npos) 
-            return {""}
+            return {""};
 
 
         int64_t number = std::atoll(input.substr(0, colon_index).c_str());
-        int str = input.substr(colon_index + 1, number);
+        auto str = input.substr(colon_index + 1, number);
         return {str};
     }
+
+    return {};
 }
