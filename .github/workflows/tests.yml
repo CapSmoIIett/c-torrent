@@ -175,6 +175,9 @@ jobs:
           ls
           cd build 
           ls
+          cd test
+          ls 
+          ./test.exe
 
       - name: Pack
         shell: bash
