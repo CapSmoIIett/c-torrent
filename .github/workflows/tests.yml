@@ -173,8 +173,10 @@ jobs:
         shell: bash
         run: |
           ls
+          echo =========================
           cd build 
           ls
+          echo =========================
           cd tests
           ls 
           ./tests.exe
