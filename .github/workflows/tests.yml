@@ -29,7 +29,7 @@ jobs:
             environment_script: "C:/Program Files (x86)/Microsoft Visual Studio/2019/Enterprise/VC/Auxiliary/Build/vcvars64.bat",
             archiver: "7z a",
             generators: "Visual Studio 16 2019",
-            test_exe_path: "./c-torrent/tests/Release/tests.exe"
+            test_exe_path: "./tests/Release/tests.exe"
           }
         - {
             name: "Windows Latest MinGW",
@@ -51,7 +51,7 @@ jobs:
             cxx: "g++",
             archiver: "7z a",
             generators: "Ninja",
-            test_exe_path: "./tests/tests.exe"
+            test_exe_path: "./build/tests/tests.exe"
           }
         - {
             name: "Ubuntu_GCC_9",
@@ -62,7 +62,7 @@ jobs:
             cxx: "g++",
             archiver: "7z a",
             generators: "Ninja",
-            test_exe_path: "./tests/tests.exe"
+            test_exe_path: "./build/tests/tests.exe"
           }
         - {
             name: "macOS Latest Clang",
@@ -73,7 +73,7 @@ jobs:
             cxx: "clang++",
             archiver: "7za a",
             generators: "Ninja",
-            test_exe_path: "./tests/tests.exe"
+            test_exe_path: "./build/tests/tests.exe"
           }
 
     steps:
