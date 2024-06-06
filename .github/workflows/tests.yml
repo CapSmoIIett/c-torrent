@@ -28,7 +28,8 @@ jobs:
             cxx: "cl",
             environment_script: "C:/Program Files (x86)/Microsoft Visual Studio/2019/Enterprise/VC/Auxiliary/Build/vcvars64.bat",
             archiver: "7z a",
-            generators: "Visual Studio 16 2019"
+            generators: "Visual Studio 16 2019",
+            test_exe_path: "./c-torrent/tests/Release/tests.exe"
           }
         - {
             name: "Windows Latest MinGW",
@@ -38,7 +39,8 @@ jobs:
             cc: "gcc",
             cxx: "g++",
             archiver: "7z a",
-            generators: "Ninja"
+            generators: "Ninja",
+            test_exe_path: "./tests/tests.exe"
           }
         - {
             name: "Ubuntu_Latest_GCC",
@@ -48,7 +50,8 @@ jobs:
             cc: "gcc",
             cxx: "g++",
             archiver: "7z a",
-            generators: "Ninja"
+            generators: "Ninja",
+            test_exe_path: "./tests/tests.exe"
           }
         - {
             name: "Ubuntu_GCC_9",
@@ -58,7 +61,8 @@ jobs:
             cc: "gcc",
             cxx: "g++",
             archiver: "7z a",
-            generators: "Ninja"
+            generators: "Ninja",
+            test_exe_path: "./tests/tests.exe"
           }
         - {
             name: "macOS Latest Clang",
@@ -68,7 +72,8 @@ jobs:
             cc: "clang",
             cxx: "clang++",
             archiver: "7za a",
-            generators: "Ninja"
+            generators: "Ninja",
+            test_exe_path: "./tests/tests.exe"
           }
 
     steps:
@@ -173,11 +178,7 @@ jobs:
       - name: Run tests
         shell: bash
         run: |
-          cd tests
-          ls
-      - name: Run tests 2
-        shell: bash
-        run: |
+          ${{matrix.config.test_exe_path}}
 
       - name: Pack
         shell: bash
