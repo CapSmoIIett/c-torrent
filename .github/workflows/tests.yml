@@ -149,6 +149,7 @@ jobs:
           ninja --version
           cmake --version
 
+
       - name: Configure
         shell: bash
         run: |
@@ -167,6 +168,13 @@ jobs:
       - name: Install Strip
         shell: bash
         run: cmake --install . --strip
+
+      - name: Run tests
+        shell: bash
+        run: |
+          ls
+          cd build 
+          ls
 
       - name: Pack
         shell: bash
