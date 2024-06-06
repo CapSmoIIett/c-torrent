@@ -130,12 +130,28 @@ jobs:
           sudo update-alternatives --install /usr/bin/cmake cmake /opt/cmake/bin/cmake 1 --force
           echo cmake version after
           cmake --version
+          echo Install gtest ======================================================================
+          sudo apt-get install -y libgtest-dev cmake
+          mkdir -p $HOME/build
+          cd $HOME/build
+          sudo cmake /usr/src/googletest/googletest
+          sudo make
+          sudo cp lib/libgtest* /usr/lib/
+          cd ..
+          sudo rm -rf build
+          sudo mkdir /usr/local/lib/googletest
+          sudo ln -s /usr/lib/libgtest.a /usr/local/lib/googletest/libgtest.a
+          sudo ln -s /usr/lib/libgtest_main.a /usr/local/lib/googletest/libgtest_main.a
       - name: Install dependencies on macos
         if: startsWith(matrix.config.os, 'macos')
         run: |
           brew install p7zip cmake ninja
           ninja --version
           cmake --version
+
+      - uses: Bacondish2023/setup-googletest@v1
+        with:
+          tag: v1.14.0
           
       - name: Configure
         shell: bash
