@@ -1,8 +1,10 @@
 
-#include <gtest/gtest.h>    
+#include <gtest/gtest.h>  
 
-TEST(TestCaseName, TestName) 
+#include "../c-torrent/bencoder.h"
+
+TEST(BENCODE_DECODE_TEST, TestDecodeString) 
 {
-  EXPECT_EQ(1, 1);
+  EXPECT_EQ({"hello"}, bencoder.decode{"5:hello"});
   EXPECT_TRUE(true);
 }
