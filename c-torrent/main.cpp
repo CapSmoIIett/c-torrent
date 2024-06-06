@@ -1,7 +1,7 @@
 #include "bencoder.h"
 #include <iostream>
 
-void main()
+int main()
 {
     std::cout << "Hi";
 }
