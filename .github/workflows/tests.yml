@@ -173,10 +173,10 @@ jobs:
         shell: bash
         run: |
           cd tests
+          ls
       - name: Run tests 2
         shell: bash
         run: |
-          ls
 
       - name: Pack
         shell: bash
