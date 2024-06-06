@@ -51,7 +51,7 @@ jobs:
             cxx: "g++",
             archiver: "7z a",
             generators: "Ninja",
-            test_exe_path: "./build/tests/tests.exe"
+            test_exe_path: ".tests/tests.a"
           }
         - {
             name: "Ubuntu_GCC_9",
@@ -62,7 +62,7 @@ jobs:
             cxx: "g++",
             archiver: "7z a",
             generators: "Ninja",
-            test_exe_path: "./build/tests/tests.exe"
+            test_exe_path: "./tests/tests.a"
           }
         - {
             name: "macOS Latest Clang",
@@ -73,7 +73,7 @@ jobs:
             cxx: "clang++",
             archiver: "7za a",
             generators: "Ninja",
-            test_exe_path: "./build/tests/tests.exe"
+            test_exe_path: "./tests/tests.a"
           }
 
     steps:
