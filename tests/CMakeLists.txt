@@ -13,7 +13,9 @@ FetchContent_MakeAvailable(googletest)
 
 enable_testing()
 
-add_executable (tests bencode_test.cpp)
+add_executable (tests 
+	bencode_test.cpp
+	../c-torrent/bencoder.cpp)
 
 target_link_libraries(
   tests
