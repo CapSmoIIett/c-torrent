@@ -12,6 +12,7 @@ std::vector<std::string> Bencoder::decode(std::string input)
 {
     if (3 > input.size())
         return {""};
+
     if (std::isdigit(input[0]))    
     {
         size_t colon_index = input.find(':');
@@ -22,6 +23,14 @@ std::vector<std::string> Bencoder::decode(std::string input)
 
         int64_t number = std::atoll(input.substr(0, colon_index).c_str());
         auto str = input.substr(colon_index + 1, number);
+        return {str};
+    }
+    else if ('i' == input[0])
+    {
+        if ('e' != input[input.size() - 1])
+            return {""};
+
+        auto str = input.substr(1, input.size() - 2);
         return {str};
     }
 

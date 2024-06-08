@@ -18,5 +18,13 @@ TEST(BENCODE_DECODE_TEST, TestDecodeString)
 
 TEST(BENCODE_DECODE_TEST, TestDecodeNumbers) 
 {
+    COMPARE_ARRAY_EQ({"42"}, Bencoder::decode("i42e"));
+    COMPARE_ARRAY_EQ({"-42"}, Bencoder::decode("i-42e"));
+    COMPARE_ARRAY_NE({"-42"}, Bencoder::decode("i42e"));
+    COMPARE_ARRAY_NE({"42"}, Bencoder::decode("i-42e"));
+    COMPARE_ARRAY_NE({"42"}, Bencoder::decode("i-42"));
+    COMPARE_ARRAY_NE({"42"}, Bencoder::decode("-42e"));
+    COMPARE_ARRAY_NE({"42"}, Bencoder::decode("-42"));
+
     EXPECT_TRUE(true);
 }

@@ -40,7 +40,7 @@ jobs:
             cxx: "g++",
             archiver: "7z a",
             generators: "Ninja",
-            test_exe_path: "./tests/tests.exe"
+            test_exe_path: "./build/tests/tests.exe"
           }
         - {
             name: "Ubuntu_Latest_GCC",
