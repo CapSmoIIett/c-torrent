@@ -15,24 +15,79 @@ std::vector<std::string> Bencoder::decode(std::string input)
 
     if (std::isdigit(input[0]))    
     {
-        size_t colon_index = input.find(':');
-
-        if (colon_index == std::string::npos) 
-            return {""};
-
-
-        int64_t number = std::atoll(input.substr(0, colon_index).c_str());
-        auto str = input.substr(colon_index + 1, number);
-        return {str};
+        return { Bencoder::decode_string(input, 0) };
     }
     else if ('i' == input[0])
     {
-        if ('e' != input[input.size() - 1])
-            return {""};
-
-        auto str = input.substr(1, input.size() - 2);
-        return {str};
+        return { Bencoder::decode_number(input, 0) };
+    }
+    else if ('d' == input[0])
+    {
+        return decode_array(input, 0);
     }
 
     return {};
+}
+
+std::string Bencoder::decode_string(const std::string& str, size_t it, size_t* end)
+{
+    size_t colon_index = str.find(':', it);
+
+    if (colon_index == std::string::npos) 
+    {
+        if (nullptr != end)
+            (*end)++;
+        return "";
+    }
+
+    int64_t number = std::atoll(str.substr(it, colon_index).c_str());
+
+    if (nullptr != end)
+        *end = colon_index + 1 + number;
+
+    return str.substr(colon_index + 1, number);
+}
+
+std::string Bencoder::decode_number(const std::string& str, size_t it, size_t* end)
+{
+    size_t begin_index = str.find('i', it);
+    size_t end_index = str.find('e', it);
+
+    if (begin_index == std::string::npos ||
+        end_index == std::string::npos ||
+        end_index - begin_index - 1 <= 0) 
+    {
+        if (nullptr != end)
+            (*end)++;
+        return "";
+    }
+    
+    if (nullptr != end)
+        *end = end_index;
+
+    return str.substr(begin_index + 1, end_index - begin_index - 1);
+}
+
+std::vector<std::string> Bencoder::decode_array(const std::string& str, size_t it)
+{
+    std::vector<std::string> answer;
+
+    while (it < str.size())
+    {
+        if (std::isdigit(str[it]))    
+        {
+            answer.push_back(decode_string(str, it, &it));
+            continue;
+        }
+
+        if ('i' == str[it])
+        {
+            answer.push_back(Bencoder::decode_number(str, it, &it));
+            continue;
+        }
+
+        ++it;
+    }
+
+    return answer;
 }
