@@ -2,4 +2,4 @@
 
 project (c-torrent)
 
-add_executable(c-torrent main.cpp bencoder.cpp)
+add_executable(c-torrent main.cpp bencoder.cpp file_parser.cpp)

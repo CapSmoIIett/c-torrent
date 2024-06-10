@@ -35,5 +35,7 @@ TEST(BENCODE_DECODE_TEST, TestDecodeDictionaries)
     COMPARE_ARRAY_EQ({{"hello","World","!","-42"}}, Bencoder::decode("d5:hello5:World1:!i-42ee"));
     COMPARE_ARRAY_EQ({{"1","-2","3","-4"}}, Bencoder::decode("di1ei-2ei3ei-4ee"));
     COMPARE_ARRAY_EQ({{""}}, Bencoder::decode("de"));
+    COMPARE_ARRAY_EQ({{""}}, Bencoder::decode("e"));
+    COMPARE_ARRAY_EQ({{""}}, Bencoder::decode("d"));
 
 }

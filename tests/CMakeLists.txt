@@ -15,7 +15,9 @@ enable_testing()
 
 add_executable (tests 
 	bencode_test.cpp
-	../c-torrent/bencoder.cpp)
+	file_parser_test.cpp
+	../c-torrent/bencoder.cpp
+	../c-torrent/file_parser.cpp)
 
 target_link_libraries(
   tests
