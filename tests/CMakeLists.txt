@@ -16,8 +16,10 @@ enable_testing()
 add_executable (tests 
 	bencode_test.cpp
 	file_parser_test.cpp
+	sha1_test.cpp
 	../c-torrent/bencoder.cpp
-	../c-torrent/file_parser.cpp)
+	../c-torrent/file_parser.cpp
+	../c-torrent/sha1.cpp)
 
 target_link_libraries(
   tests
