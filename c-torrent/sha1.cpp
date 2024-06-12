@@ -21,9 +21,32 @@
 static const size_t BLOCK_INTS = 16;  /* number of 32bit integers per SHA1 block */
 static const size_t BLOCK_BYTES = BLOCK_INTS * 4;
 
+const uint32_t SHA1::constants[5] =
+{
+    0x67452301,
+    0xEFCDAB89,
+    0x98BADCFE,
+    0x10325476,
+    0xC3D2E1F0
+};
+
 std::string SHA1::algo(std::string)
 {
     std::string buffer;
+
+    // Инициализируйте переменные:
+    uint32_t digest[5];
+    digest[0] = constants[0];
+    digest[1] = constants[1];
+    digest[2] = constants[2];
+    digest[3] = constants[3];
+    digest[4] = constants[4];
+
+    
+    while (true)
+    {
+        
+    }
 
     return "";
 }
