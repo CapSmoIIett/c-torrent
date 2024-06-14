@@ -14,12 +14,15 @@ public:
     std::string get_comment() const;
     std::string get_name() const;
     std::string get_encoding() const;
+    std::string get_created_by() const;
+    std::vector<std::string> get_announce_list() const;
     std::string get_field(const std::string& field) const;
     void parse_file(const std::string& file);
 
     static std::string open_file (const std::string& file_name);
 
+    std::vector<std::string> file_data;
+
 private:
 
-    std::vector<std::string> file_data;
 };
