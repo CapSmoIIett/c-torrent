@@ -8,6 +8,37 @@ static std::string Bencoder::encode()
 }
 */
 
+std::string Bencoder::encode(std::vector<std::string> elements)
+{
+    if (elements.empty())
+        return "";
+
+    std::string result;
+
+    if (1 < elements.size())
+        result += "d";
+
+    for (auto element : elements)
+    {
+        if (std::isdigit(element[0]) ||
+            (2 <= element.size() && 
+            std::isdigit(element[1]) &&
+            '-' == element[0]))
+        {
+            result += "i" + element + "e";
+        }
+        else
+        {
+            result += std::to_string(element.size()) + ":" + element;
+        }
+    }
+
+    if (1 < elements.size())
+        result += "e";
+
+    return result; 
+}
+
 std::vector<std::string> Bencoder::decode(std::string input)
 {
     if (3 > input.size())

@@ -31,11 +31,34 @@ TEST(BENCODE_DECODE_TEST, TestDecodeNumbers)
 
 TEST(BENCODE_DECODE_TEST, TestDecodeDictionaries) 
 {
-    COMPARE_ARRAY_EQ({{"hello","World","!","42"}}, Bencoder::decode("d5:hello5:World1:!i42ee"));
-    COMPARE_ARRAY_EQ({{"hello","World","!","-42"}}, Bencoder::decode("d5:hello5:World1:!i-42ee"));
-    COMPARE_ARRAY_EQ({{"1","-2","3","-4"}}, Bencoder::decode("di1ei-2ei3ei-4ee"));
-    COMPARE_ARRAY_EQ({{""}}, Bencoder::decode("de"));
-    COMPARE_ARRAY_EQ({{""}}, Bencoder::decode("e"));
-    COMPARE_ARRAY_EQ({{""}}, Bencoder::decode("d"));
+    COMPARE_ARRAY_EQ({"hello","World","!","42"}, Bencoder::decode("d5:hello5:World1:!i42ee"));
+    COMPARE_ARRAY_EQ({"hello","World","!","-42"}, Bencoder::decode("d5:hello5:World1:!i-42ee"));
+    COMPARE_ARRAY_EQ({"1","-2","3","-4"}, Bencoder::decode("di1ei-2ei3ei-4ee"));
+    COMPARE_ARRAY_EQ({""}, Bencoder::decode("de"));
+    COMPARE_ARRAY_EQ({""}, Bencoder::decode("e"));
+    COMPARE_ARRAY_EQ({""}, Bencoder::decode("d"));
 
+}
+
+TEST(BENCODE_DECODE_TEST, TestEncodeStrings) 
+{
+    EXPECT_EQ("0:", Bencoder::encode({""}));
+    EXPECT_EQ("1: ", Bencoder::encode({" "}));
+    EXPECT_EQ("5:hello", Bencoder::encode({"hello"}));
+    EXPECT_EQ("12:Hello World!", Bencoder::encode({"Hello World!"}));
+    EXPECT_EQ("14:~`'\"!@#$%^&*()", Bencoder::encode({"~`'\"!@#$%^&*()"}));
+}
+
+TEST(BENCODE_DECODE_TEST, TestEncodeNumbers) 
+{
+    EXPECT_EQ("i42e", Bencoder::encode({"42"}));
+    EXPECT_EQ("i-42e", Bencoder::encode({"-42"}));
+    EXPECT_EQ("i0e", Bencoder::encode({"0"}));
+}
+
+TEST(BENCODE_DECODE_TEST, TestEncodeDictionaries) 
+{
+    EXPECT_EQ("d5:hello5:World1:!i42ee", Bencoder::encode({"hello","World","!","42"}));
+    EXPECT_EQ("d5:hello5:World1:!i-42ee", Bencoder::encode({"hello","World","!","-42"}));
+    EXPECT_EQ("di1ei-2ei3ei-4ee", Bencoder::encode({"1","-2","3","-4"}));
 }
