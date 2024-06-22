@@ -25,15 +25,25 @@ MetaInfo get_meta_info(TFileParser parser)
     return minfo;
 }
 
+//#include <iostream>
+//#include <fstream>
 std::string calculate_info_hash(MetaInfo minfo) 
 {
     std::string str = 
+        "d" +
         Bencoder::encode("length") + Bencoder::encode(minfo.info.length) + 
         Bencoder::encode("name") + Bencoder::encode(minfo.info._name) +
         Bencoder::encode("piece length") + Bencoder::encode(minfo.info._piece_length) +
-        Bencoder::encode("piece") + Bencoder::encode(minfo.info._pieces);
+        Bencoder::encode("pieces") + std::to_string(minfo.info._pieces.size()) + ":" + minfo.info._pieces +
+        "e";
 
-    std::cout << "\n\n\n\n" << str << "\n\n\n";
+    /*
+    std::ofstream myfile;
+    myfile.open ("example.txt");
+    myfile << str;
+    myfile.close();
+    //*/
+
 
     SHA1 checksum;
     checksum.update(str);
