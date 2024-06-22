@@ -6,6 +6,7 @@
 class Bencoder
 {
 public:
+    static std::string encode(std::string);
     static std::string encode(std::vector<std::string>);
     static std::vector<std::string> decode(std::string input);
 

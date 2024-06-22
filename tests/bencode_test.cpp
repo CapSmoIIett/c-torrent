@@ -40,23 +40,25 @@ TEST(BENCODE_DECODE_TEST, TestDecodeDictionaries)
 
 }
 
-TEST(BENCODE_DECODE_TEST, TestEncodeStrings) 
+TEST(BENCODE_ENCODE_TEST, TestEncodeStrings) 
 {
-    EXPECT_EQ("0:", Bencoder::encode({""}));
-    EXPECT_EQ("1: ", Bencoder::encode({" "}));
-    EXPECT_EQ("5:hello", Bencoder::encode({"hello"}));
-    EXPECT_EQ("12:Hello World!", Bencoder::encode({"Hello World!"}));
-    EXPECT_EQ("14:~`'\"!@#$%^&*()", Bencoder::encode({"~`'\"!@#$%^&*()"}));
+    using namespace std::string_literals;
+    EXPECT_EQ("0:", Bencoder::encode({""s}));
+    EXPECT_EQ("1: ", Bencoder::encode({" "s}));
+    EXPECT_EQ("5:hello", Bencoder::encode({"hello"s}));
+    EXPECT_EQ("12:Hello World!", Bencoder::encode({"Hello World!"s}));
+    EXPECT_EQ("14:~`'\"!@#$%^&*()", Bencoder::encode({"~`'\"!@#$%^&*()"s}));
 }
 
-TEST(BENCODE_DECODE_TEST, TestEncodeNumbers) 
+TEST(BENCODE_ENCODE_TEST, TestEncodeNumbers) 
 {
-    EXPECT_EQ("i42e", Bencoder::encode({"42"}));
-    EXPECT_EQ("i-42e", Bencoder::encode({"-42"}));
-    EXPECT_EQ("i0e", Bencoder::encode({"0"}));
+    using namespace std::string_literals;
+    EXPECT_EQ("i42e", Bencoder::encode({"42"s}));
+    EXPECT_EQ("i-42e", Bencoder::encode({"-42"s}));
+    EXPECT_EQ("i0e", Bencoder::encode({"0"s}));
 }
 
-TEST(BENCODE_DECODE_TEST, TestEncodeDictionaries) 
+TEST(BENCODE_ENCODE_TEST, TestEncodeDictionaries) 
 {
     EXPECT_EQ("d5:hello5:World1:!i42ee", Bencoder::encode({"hello","World","!","42"}));
     EXPECT_EQ("d5:hello5:World1:!i-42ee", Bencoder::encode({"hello","World","!","-42"}));

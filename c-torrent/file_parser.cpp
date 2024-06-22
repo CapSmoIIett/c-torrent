@@ -59,6 +59,11 @@ std::string TFileParser::get_created_by() const
     return get_field("created by");
 }
 
+std::string TFileParser::get_pieces() const
+{
+    return get_field("pieces");
+}
+
 std::vector<std::string> TFileParser::get_announce_list() const
 {
     auto it = std::find(file_data.begin(), file_data.end(), "announce-list");

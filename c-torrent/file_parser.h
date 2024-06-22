@@ -15,6 +15,7 @@ public:
     std::string get_name() const;
     std::string get_encoding() const;
     std::string get_created_by() const;
+    std::string get_pieces() const;
     std::vector<std::string> get_announce_list() const;
     std::string get_field(const std::string& field) const;
     void parse_file(const std::string& file);

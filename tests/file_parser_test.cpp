@@ -3,24 +3,25 @@
 
 #include "helper.h"
 #include"../c-torrent/file_parser.h"
+#include"../c-torrent/hash.h"
 
 #define TEST_FILE_1 "Armageddon.torrent"
 #define TEST_FILE_2 "sample.torrent"
 
 
 const std::vector<std::string> TEST_FILE_1_ANNOUNCE_LIST = {
-"udp://opentor.net:6969",
-"udp://tracker.ccc.de:80/announce",
-"http://retracker.local/announce",
-"udp://tracker.publicbt.com:80",
-"udp://tracker.istole.it:80",
-"udp://open.demonii.com:1337",
-"http://tracker.grepler.com:6969/announce",
-"udp://tracker.dler.com:6969/announce",
-"http://h4.trakx.nibba.trade:80/announce",
-"udp://open.stealth.si:80/announce",
-"udp://tracker.bitsearch.to:1337/announce",
-"udp://exodus.desync.com:6969/announce"
+    "udp://opentor.net:6969",
+    "udp://tracker.ccc.de:80/announce",
+    "http://retracker.local/announce",
+    "udp://tracker.publicbt.com:80",
+    "udp://tracker.istole.it:80",
+    "udp://open.demonii.com:1337",
+    "http://tracker.grepler.com:6969/announce",
+    "udp://tracker.dler.com:6969/announce",
+    "http://h4.trakx.nibba.trade:80/announce",
+    "udp://open.stealth.si:80/announce",
+    "udp://tracker.bitsearch.to:1337/announce",
+    "udp://exodus.desync.com:6969/announce"
 };
 
 
@@ -54,4 +55,15 @@ TEST(FILE_PARSE_TEST, ParseFile_2)
     EXPECT_EQ("http://bittorrent-test-tracker.codecrafters.io/announce", parser.get_url());
     EXPECT_EQ("92063", parser.get_size());
     EXPECT_EQ("32768", parser.get_plength());
+}
+
+
+TEST(CALCULATE_INFO_HASH, CalculateInfoHash)
+{
+    TFileParser parser;
+    parser.parse_file(TFileParser::open_file(TEST_FILE_2));
+
+    MetaInfo minfo = get_meta_info(parser);
+
+    EXPECT_EQ("d69f91e6b2ae4c542468d1073a71d4ea13879a7f", calculate_info_hash(minfo));
 }

@@ -8,8 +8,22 @@ static std::string Bencoder::encode()
 }
 */
 
+std::string Bencoder::encode(std::string str)
+{
+    if (std::isdigit(str[0]) ||
+        (2 <= str.size() && 
+        std::isdigit(str[1]) &&
+        '-' == str[0]))
+    {
+        return "i" + str + "e";
+    }
+    return std::to_string(str.size()) + ":" + str;
+}
+
+#include <iostream>
 std::string Bencoder::encode(std::vector<std::string> elements)
 {
+    std::cout << elements[0];
     if (elements.empty())
         return "";
 
