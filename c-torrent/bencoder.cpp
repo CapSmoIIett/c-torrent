@@ -20,10 +20,8 @@ std::string Bencoder::encode(std::string str)
     return std::to_string(str.size()) + ":" + str;
 }
 
-#include <iostream>
 std::string Bencoder::encode(std::vector<std::string> elements)
 {
-    std::cout << elements[0];
     if (elements.empty())
         return "";
 

@@ -67,3 +67,20 @@ TEST(CALCULATE_INFO_HASH, CalculateInfoHash)
 
     EXPECT_EQ("d69f91e6b2ae4c542468d1073a71d4ea13879a7f", calculate_info_hash(minfo));
 }
+
+
+TEST(GET_PIECES_TEST, GetPiecesTest)
+{
+
+    TFileParser parser;
+    parser.parse_file(TFileParser::open_file(TEST_FILE_2));
+
+    MetaInfo minfo = get_meta_info(parser);
+
+    COMPARE_ARRAY_EQ({
+        "e876f67a2a8886e8f36b136726c30fa29703022d",
+        "6e2275e604a0766656736e81ff10b55204ad8d35",
+        "f00d937a0213df1982bc8d097227ad9e909acc17"},
+        get_pieces(minfo.info._pieces)
+    );
+}
