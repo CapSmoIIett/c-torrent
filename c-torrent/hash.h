@@ -1,4 +1,4 @@
-
+#pragma once
 
 #include "metainfo.h"
 #include "file_parser.h"
@@ -6,7 +6,7 @@
 #include "sha1.h"
 
 
-MetaInfo get_meta_info(TFileParser parser)
+inline MetaInfo get_meta_info(TFileParser parser)
 {
     MetaInfo minfo;    
     minfo.announce = parser.get_url();
@@ -27,7 +27,7 @@ MetaInfo get_meta_info(TFileParser parser)
 
 //#include <iostream>
 //#include <fstream>
-std::string calculate_info_hash(MetaInfo minfo) 
+inline std::string calculate_info_hash(MetaInfo minfo) 
 {
     std::string str = 
         "d" +
@@ -85,7 +85,7 @@ std::vector<std::string> get_pieces(const std::string& pieces_in_str)
 }
 */
 
-std::vector<std::string> get_pieces(const std::string& pieces_in_str)
+inline std::vector<std::string> get_pieces(const std::string& pieces_in_str)
 {
     std::vector<std::string> result;
 

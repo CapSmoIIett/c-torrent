@@ -1,3 +1,6 @@
 [submodule "c-torrent/HTTPRequest"]
 	path = c-torrent/HTTPRequest
 	url = https://github.com/elnormous/HTTPRequest.git
+[submodule "c-torrent/httplib"]
+	path = c-torrent/httplib
+	url = https://github.com/yhirose/cpp-httplib
