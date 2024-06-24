@@ -8,6 +8,13 @@
 
 #include <iostream>
 
+std::tuple<std::string, std::string> split_domain_and_endpoint(const std::string& tracker_url) {
+    auto last_forward_slash_index = tracker_url.find_last_of('/');
+    auto domain = tracker_url.substr(0, last_forward_slash_index);
+    auto endpoint = tracker_url.substr(last_forward_slash_index, tracker_url.size() - last_forward_slash_index);
+    return std::make_tuple(domain, endpoint);
+}
+
 std::vector<std::string> request_get_nodes(const MetaInfo minfo)
 {
 /*
@@ -19,26 +26,35 @@ std::vector<std::string> request_get_nodes(const MetaInfo minfo)
     std::cout << std::string{response.body.begin(), response.body.end()} << '\n'; 
 */
 
-    std::string peer_id = "00112233445566778899";
     size_t port = 6881;
     size_t uploaded = 0;
     size_t downloaded = 0;
     size_t compact = 1;
-    httplib::Client cli(minfo.announce);
 
-    httplib::Headers headers = {
-        { "info_hash", calculate_info_hash(minfo)},
-        { "peer_id", peer_id},
+    httplib::Params params{
+        {"peer_id", "00112233445566778899"},
         { "port", std::to_string(port)},
-        { "uploaded", std::to_string(uploaded)},
-        { "downloaded", std::to_string(downloaded)},
+        {"uploaded", "0"},
+        {"downloaded", "0"},
         { "left", minfo.info.length},
-        { "compact", std::to_string(compact)},
+        {"compact", "1"}
     };
 
-    auto res = cli.Get("", headers);
+    httplib::Headers headers{};
 
-    std::cout << res << "\n";
+
+    auto domain_and_endpoint = split_domain_and_endpoint(minfo.announce);
+
+    //httplib::Client cli(minfo.announce);
+    httplib::Client cli(std::get<0>(domain_and_endpoint));
+    //auto res = cli.Get("", headers);
+    auto res = cli.Get(
+        std::get<1>(domain_and_endpoint) + "?info_hash=d69f91e6b2ae4c542468d1073a71d4ea13879a7f", //calculate_info_hash(minfo),
+        params,
+        headers
+    );
+
+    std::cout << res->body << "\n";
 
     return {};
 }
