@@ -17,7 +17,7 @@ TEST(REQUESR_TEST, TestRequest)
     TFileParser parser;
     parser.parse_file(TFileParser::open_file(TEST_FILE_2));
 
-    //for (int i = 0; i < 100; ++i)
+    //for (int i = 0; i < 10; ++i)
         request_get_nodes(get_meta_info(parser));
 }
 
