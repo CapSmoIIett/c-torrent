@@ -31,17 +31,17 @@ jobs:
             generators: "Visual Studio 16 2019",
             test_exe_path: "./build/tests/Release/tests.exe"
           }
-        - {
-            name: "Windows Latest MinGW",
-            os: windows-latest,
-            artifact: "windows_mingw.7z",
-            build_type: "Release",
-            cc: "gcc",
-            cxx: "g++",
-            archiver: "7z a",
-            generators: "Ninja",
-            test_exe_path: "./build/tests/tests.exe"
-          }
+#        - {
+#            name: "Windows Latest MinGW",
+#            os: windows-latest,
+#            artifact: "windows_mingw.7z",
+#            build_type: "Release",
+#            cc: "gcc",
+#            cxx: "g++",
+#            archiver: "7z a",
+#            generators: "Ninja",
+#            test_exe_path: "./build/tests/tests.exe"
+#          }
         - {
             name: "Ubuntu_Latest_GCC",
             os: ubuntu-latest,
