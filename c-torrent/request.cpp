@@ -5,6 +5,7 @@
 #include "../c-torrent/bencoder.h"
 
 #include "hash.h" 
+#include <tuple>
 
 
 #include <iostream>
@@ -53,7 +54,6 @@ std::vector<std::string> request_get_nodes(const MetaInfo minfo)
     const auto response = request.send("GET", body);
 
     std::cout << std::string{response.body.begin(), response.body.end()} << '\n'; 
-*/
 
     size_t port = 6881;
     size_t uploaded = 0;
@@ -124,7 +124,7 @@ std::vector<std::string> request_get_nodes(const MetaInfo minfo)
     );
     */
 
-    std::cout << res->body << "\n";
+    //std::cout << res->body << "\n";
 
     return {};
 }

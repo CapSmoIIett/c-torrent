@@ -80,6 +80,10 @@ jobs:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
 
+      - name: Checkout submodules
+        run: |
+          git submodule update --init --recursive
+
       - name: Print env
         run: |
           echo github.event.action: ${{ github.event.action }}
