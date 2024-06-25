@@ -17,9 +17,11 @@ TEST(REQUESR_TEST, TestRequest)
     TFileParser parser;
     parser.parse_file(TFileParser::open_file(TEST_FILE_2));
 
-    //for (int i = 0; i < 10; ++i)
-    //request_get_nodes(get_meta_info(parser));
-
-    EXPECT_TRUE(true);
+    COMPARE_ARRAY_EQ({
+        { 165, 232, 33, 77, 51467 },
+        { 178, 62, 85, 20, 51489 },
+        { 178, 62, 82, 89, 51448 }},
+        request_get_nodes(get_meta_info(parser))
+    );
 }
 
