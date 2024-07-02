@@ -89,6 +89,11 @@ void TFileParser::parse_file(const std::string& file)
 
 std::string TFileParser::open_file(const std::string& file_name)
 {
+    std::ifstream t(file_name);
+    std::stringstream buffer;
+    buffer << t.rdbuf();
+    std::string s = buffer.str();
+
     /*
     std::ifstream fp(file_name, std::ios::in | std::ios::binary | std::ios::ate);
     const auto size = fp.tellg();
@@ -96,8 +101,9 @@ std::string TFileParser::open_file(const std::string& file_name)
     s.resize(size);
     fp.seekg(0u);
     fp.read(&s[0], size);
-    return s;
-    */
+
+    //*/
+    /*
     auto fp = std::fopen(file_name.c_str(), "rb");
 
     std::fseek(fp, 0u, SEEK_END);
@@ -107,6 +113,7 @@ std::string TFileParser::open_file(const std::string& file_name)
     std::fread(&s[0], 1u, size, fp);
 
     std::fclose(fp); 
+    //*/
 
     return s;
 }

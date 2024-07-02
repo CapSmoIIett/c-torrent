@@ -25,3 +25,42 @@ TEST(REQUESR_TEST, TestRequest)
     );
 }
 
+
+#include <iostream>
+TEST(REQUESR_TEST, TestRequest2) 
+{
+    /*
+    system("pause");
+    TFileParser parser;
+
+    parser.parse_file(TFileParser::open_file(TEST_FILE_1));
+
+    auto arr = request_get_nodes(get_meta_info(parser));
+
+
+    for (auto it : arr )
+    {
+        for (auto i : it )
+            std::cout << i << ".";
+        std::cout << "\n";
+    }
+    */
+}
+
+
+TEST(REQUESR_TEST, PeerIdTest) 
+{
+    TFileParser parser;
+
+    parser.parse_file(TFileParser::open_file(TEST_FILE_2));
+    
+    auto arr = request_get_nodes(get_meta_info(parser));
+    
+    auto ip = std::to_string(arr[0][0]) + "." + std::to_string(arr[0][1]) + "." +
+        std::to_string(arr[0][2]) + "." + std::to_string(arr[0][3]);
+
+    EXPECT_EQ(
+        "2d524e302e302e302d5af5c2cf488815c4a2fa7f",
+        request_get_peer_id(get_meta_info(parser), ip, std::to_string(arr[0][4])));
+
+}
