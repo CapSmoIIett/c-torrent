@@ -216,6 +216,51 @@ std::string request_get_peer_id(const MetaInfo minfo, std::string peer_ip, std::
 
 #else
 
+    int sock = socket(AF_INET, SOCK_STREAM, 0);
+    int res = 0;
+
+    if (sock == INVALID_SOCKET) 
+    {
+        std::cout << "socket error" << "\n";
+    }
+
+    struct hostent* host = gethostbyname(peer_ip.c_str());
+
+    struct sockaddr_in addr;
+    memset(&addr, 0, sizeof(struct sockaddr_in));
+    addr.sin_family = AF_INET;
+    addr.sin_addr.s_addr = 
+        inet_addr(inet_ntoa(*(struct in_addr*)*host->h_addr_list));
+    addr.sin_port = htons(std::stoi(peer_port));
+
+    res = connect(sock, (const struct sockaddr *) &addr, sizeof(addr));
+    if (res == -1)
+    {
+        std::cout << "connect error" << "\n";
+    }
+
+    res = write(sock, handshake_message.c_str(), handshake_message.size());
+    if (res == -1)
+    {
+        std::cout << "wirte error" << "\n";
+    }
+
+    res = read(sock, buffer, sizeof(buffer));
+    if (res == -1) 
+    {
+        std::cout << "read error" << "\n";
+    }
+
+    std::string response(buffer, res);
+
+    res = close(sock);
+
+    if (res == -1) 
+    {
+        std::cout << "close" << "\n";
+    }
+
+
 #endif
 
     size_t start_pos =
