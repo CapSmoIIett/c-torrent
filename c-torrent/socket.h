@@ -3,7 +3,7 @@
 
 #if defined(_WIN32) || defined(_WIN64)
 	#define OS_WINDOWS
-#elif defined(__unix__) || defined(__unix)
+#elif defined(__unix__) || defined(__unix) || (defined(__APPLE__) && defined(__MACH__))
 	#define OS_POSIX
 #else
 	#error unsupported platform
@@ -21,6 +21,15 @@
 	#include <unistd.h>
 	#include <stdio.h>
 	#include <stdlib.h>
+
+    #include <arpa/inet.h>
+#include <errno.h>
+#include <netdb.h>
+#include <stdlib.h>
+#include <string.h>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <unistd.h>
 
 #endif
 
@@ -134,6 +143,7 @@ void Socket::connect(sockaddr_in addr)
         std::cout << "connect error " << GetLastError() << "\n";
     }
 }
+
 
 
 void Socket::send(std::string msg)
