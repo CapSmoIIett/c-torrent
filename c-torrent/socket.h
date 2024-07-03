@@ -52,6 +52,21 @@ public:
     std::string GetLastError();
 
 
+#if defined(OS_WINDOWS)
+    static const long S_ERROR = SOCKET_ERROR;
+#else
+    static const long S_ERROR = SO_ERROR;
+#endif
+    
+
+#if defined(OS_WINDOWS)
+    static unsigned long inet_addr(const char *ip);
+#else
+    static in_addr_t inet_addr(const char *ip);
+#endif
+
+
+
 private:
 #if defined(OS_WINDOWS)
 
@@ -107,7 +122,14 @@ void Socket::socket()
 
 void Socket::connect(sockaddr_in addr)
 {
-    if(SOCKET_ERROR == ::connect(_socket, (SOCKADDR*) &addr, sizeof(addr)))
+    int res = 0;
+
+#if defined(OS_WINDOWS)
+    res = ::connect(_socket, (SOCKADDR*) &addr, sizeof(addr));
+#else
+    res = ::connect(_socket, (const struct sockaddr *) &addr, sizeof(addr));
+#endif
+    if(S_ERROR == res)
     {
         std::cout << "connect error " << GetLastError() << "\n";
     }
@@ -124,7 +146,7 @@ void Socket::send(std::string msg)
     res = ::write(_socket, msg.c_str(), msg.size());
 #endif
 
-    if (SOCKET_ERROR == res)
+    if (S_ERROR == res)
     {
         std::cout << "send error " << GetLastError() << "\n";
     }
@@ -178,7 +200,7 @@ void Socket::closesocket()
     res = ::close(_socket);
 #endif
 
-    if (SOCKET_ERROR == res)
+    if (S_ERROR == res)
     {
         std::cout << "closesocket error" << GetLastError() << "\n";
     }
@@ -210,3 +232,19 @@ Socket::~Socket()
     WSACleanup();
 #endif
 }
+
+
+#if defined(OS_WINDOWS)
+    unsigned long Socket::inet_addr(const char *ip)
+    {
+        return ::inet_addr(ip);
+    }
+#else
+    in_addr_t Socket::inet_addr(const char *ip)
+    {
+
+        struct hostent* host = gethostbyname(ip);
+        return ::inet_addr(inet_ntoa(*(struct in_addr*)*host->h_addr_list));
+    }
+#endif
+

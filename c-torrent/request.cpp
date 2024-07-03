@@ -138,8 +138,15 @@ std::string request_get_peer_id(const MetaInfo minfo, std::string peer_ip, std::
     socket.socket();
 
     struct sockaddr_in saddr; 
+//  struct sockaddr_in addr;
+
     saddr.sin_family = AF_INET;
-    saddr.sin_addr.s_addr = inet_addr(peer_ip.c_str());
+
+    saddr.sin_addr.s_addr = Socket::inet_addr(peer_ip.c_str());
+//  struct hostent* host = gethostbyname(peer_ip.c_str());
+//  addr.sin_addr.s_addr = 
+//      inet_addr(inet_ntoa(*(struct in_addr*)*host->h_addr_list));
+
     saddr.sin_port = htons(std::stoi(peer_port));
 
     socket.connect(saddr);
@@ -154,13 +161,9 @@ std::string request_get_peer_id(const MetaInfo minfo, std::string peer_ip, std::
 
 
 /*
-    struct hostent* host = gethostbyname(peer_ip.c_str());
 
-    struct sockaddr_in addr;
     memset(&addr, 0, sizeof(struct sockaddr_in));
     addr.sin_family = AF_INET;
-    addr.sin_addr.s_addr = 
-        inet_addr(inet_ntoa(*(struct in_addr*)*host->h_addr_list));
     addr.sin_port = htons(std::stoi(peer_port));
     */
 
