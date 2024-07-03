@@ -100,36 +100,8 @@ std::vector<std::vector<long long int>> request_get_nodes(const MetaInfo minfo)
 
 }
 
-#if defined(_WIN32) || defined(_WIN64)
-	#define OS_WINDOWS
-#elif defined(__unix__) || defined(__unix)
-	#define OS_POSIX
-#else
-	#error unsupported platform
-#endif
 
 
-#ifdef OS_WINDOWS	 
-#define WIN(exp) exp
-#define NIX(exp)
-
-#else
-#define WIN(exp)
-#define NIX(exp) exp
-#endif
-
-#if defined(OS_WINDOWS)
-	//#include <Windows.h>
-	#include <WinSock2.h> 
-	#include <WS2tcpip.h>
-#else
-	#include <sys/socket.h>
-	#include <netinet/in.h>
-	#include <netinet/tcp.h>
-	#include <unistd.h>
-	#include <stdio.h>
-	#include <stdlib.h>
-#endif
 
 std::string get_info_string(std::string info_hash)
 {
@@ -145,6 +117,8 @@ std::string get_info_string(std::string info_hash)
 }
 
 
+#include "socket.h"
+
 std::string request_get_peer_id(const MetaInfo minfo, std::string peer_ip, std::string peer_port)
 {
     using namespace std::string_literals;
@@ -157,73 +131,29 @@ std::string request_get_peer_id(const MetaInfo minfo, std::string peer_ip, std::
 
     // Send message
 
-    char buffer[1024];
+    Socket socket;
 
-#if defined(OS_WINDOWS)
-    WSADATA wsaData = {0};
-    SOCKET sock = INVALID_SOCKET;
     int res = 0;
 
-    if ( 0 != WSAStartup(MAKEWORD(2, 2), &wsaData))
-    {
-        std::cout << "WSAStartup error " << WSAGetLastError() << "\n";
-    }
-
-    sock = socket(AF_INET, SOCK_STREAM, 0);
-    if (sock == INVALID_SOCKET) 
-    {
-        std::cout << "socket error " << WSAGetLastError() << "\n";
-    }
+    socket.socket();
 
     struct sockaddr_in saddr; 
     saddr.sin_family = AF_INET;
     saddr.sin_addr.s_addr = inet_addr(peer_ip.c_str());
     saddr.sin_port = htons(std::stoi(peer_port));
 
-    if(SOCKET_ERROR == connect(sock, (SOCKADDR*) &saddr, sizeof(saddr)))
-    {
-        std::cout << "connect error " << WSAGetLastError() << "\n";
-    }
+    socket.connect(saddr);
 
-    res = send(sock, handshake_message.c_str(), handshake_message.size(), 0);
-    if (SOCKET_ERROR == res)
-    {
-        std::cout << "send error " << WSAGetLastError() << "\n";
-    }
+    socket.send(handshake_message);
 
-    res = recv(sock, buffer, sizeof(buffer), 0);
-    if (res == 0)
-    {
-        std::cout << "closed " << WSAGetLastError() << "\n";
-        // closed
-    }
-    else if (res < 0)
-    {
-        std::cout << "error " << WSAGetLastError() << "\n";
-        // error
-    }
+    auto response = socket.recv();
 
     //*/
-    std::string response(buffer, res);
 
-    res = closesocket(sock);
-    if (SOCKET_ERROR == res)
-    {
-        std::cout << "closesocket error" << WSAGetLastError() << "\n";
-    }
+    socket.closesocket();
 
-    WSACleanup();
 
-#else
-
-    int sock = socket(AF_INET, SOCK_STREAM, 0);
-    int res = 0;
-
-    if (sock == INVALID_SOCKET) 
-    {
-        std::cout << "socket error" << "\n";
-    }
-
+/*
     struct hostent* host = gethostbyname(peer_ip.c_str());
 
     struct sockaddr_in addr;
@@ -232,36 +162,8 @@ std::string request_get_peer_id(const MetaInfo minfo, std::string peer_ip, std::
     addr.sin_addr.s_addr = 
         inet_addr(inet_ntoa(*(struct in_addr*)*host->h_addr_list));
     addr.sin_port = htons(std::stoi(peer_port));
+    */
 
-    res = connect(sock, (const struct sockaddr *) &addr, sizeof(addr));
-    if (res == -1)
-    {
-        std::cout << "connect error" << "\n";
-    }
-
-    res = write(sock, handshake_message.c_str(), handshake_message.size());
-    if (res == -1)
-    {
-        std::cout << "wirte error" << "\n";
-    }
-
-    res = read(sock, buffer, sizeof(buffer));
-    if (res == -1) 
-    {
-        std::cout << "read error" << "\n";
-    }
-
-    std::string response(buffer, res);
-
-    res = close(sock);
-
-    if (res == -1) 
-    {
-        std::cout << "close" << "\n";
-    }
-
-
-#endif
 
     size_t start_pos =
         28    // length of the protocol string + reserved bytes
@@ -279,4 +181,39 @@ std::string request_get_peer_id(const MetaInfo minfo, std::string peer_ip, std::
 
     return ss.str();
 
+}
+
+void download_piece_command(std::string tfile, std::string outfile, int piece_index)
+{
+    TFileParser parser;
+    parser.parse_file(TFileParser::open_file(tfile));
+
+    auto minfo = get_meta_info(parser);
+
+
+    auto arr = request_get_nodes(minfo);
+
+    auto peer_ip = std::to_string(arr[0][0]) + "." + std::to_string(arr[0][1]) + "." +
+        std::to_string(arr[0][2]) + "." + std::to_string(arr[0][3]);
+
+    auto peer_port = std::to_string(arr[0][4]);
+
+    auto peer_id = request_get_peer_id(minfo, peer_ip, peer_port);
+
+
+    //
+
+    // const uint8_t INTERESTED_MESSAGE_ID = 2;
+    std::vector<uint8_t> msg;
+    std::vector<uint8_t> payload;
+    uint32_t total_length = 4                 // message length (4 bytes)
+                            + 1               // message ID (1 byte)
+                            + payload.size(); // payload length (variable)
+    msg.reserve(total_length);
+    // actual message length
+    uint32_t networkLength = htonl(total_length - 4);
+    const uint8_t *lengthBytes = reinterpret_cast<const uint8_t *>(&networkLength);
+    msg.insert(msg.end(), lengthBytes, lengthBytes + sizeof(networkLength));
+    msg.push_back(static_cast<uint8_t>(2));
+    msg.insert(msg.end(), payload.begin(), payload.end());
 }
