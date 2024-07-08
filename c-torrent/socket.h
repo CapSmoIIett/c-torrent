@@ -1,6 +1,9 @@
 
 #pragma once
 
+#ifndef INVALID_SOCKET
+    #define INVALID_SOCKET -1
+#endif
 
 #if defined(_WIN32) || defined(_WIN64)
 	#define OS_WINDOWS

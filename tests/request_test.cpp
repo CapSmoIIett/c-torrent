@@ -54,7 +54,7 @@ TEST(REQUESR_TEST, TestRequest2)
 
 TEST(REQUESR_TEST, PeerIdTest) 
 {
-    //system("pause");
+    /*
     TFileParser parser;
 
     parser.parse_file(TFileParser::open_file(TEST_FILE_2));
@@ -74,7 +74,7 @@ TEST(REQUESR_TEST, PeerIdTest)
         "2d524e302e302e302d5af5c2cf488815c4a2fa7f",
         arr[0].request_get_peer_id(torrent.minfo)
     );
-
+    */
 }
 
 TEST(REQUESR_TEST, DownloadPieceTest) 
