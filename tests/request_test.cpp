@@ -54,7 +54,6 @@ TEST(REQUESR_TEST, TestRequest2)
 
 TEST(REQUESR_TEST, PeerIdTest) 
 {
-    /*
     TFileParser parser;
 
     parser.parse_file(TFileParser::open_file(TEST_FILE_2));
@@ -67,14 +66,17 @@ TEST(REQUESR_TEST, PeerIdTest)
         Peer({ 165, 232, 33, 77, 51467 }),
         Peer({ 178, 62, 85, 20, 51489 }),
         Peer({ 178, 62, 82, 89, 51448 })},
-        torrent.request_get_peers()
+        arr//torrent.request_get_peers()
     );
+
+    auto peer = arr[0];
+
+    peer.connect();
     
     EXPECT_EQ(
         "2d524e302e302e302d5af5c2cf488815c4a2fa7f",
-        arr[0].request_get_peer_id(torrent.minfo)
+        peer.request_get_peer_id(torrent.minfo)
     );
-    */
 }
 
 TEST(REQUESR_TEST, DownloadPieceTest) 
