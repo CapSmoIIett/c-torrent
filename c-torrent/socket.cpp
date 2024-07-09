@@ -1,16 +1,22 @@
 
 #include "socket.h"
 
+
+#if defined(OS_WINDOWS)
+    unsigned int msock::Socket::_amount = 0;
+#endif
+
 msock::Socket::Socket()
 {
 #if defined(OS_WINDOWS)
+
+    if (0 != _amount++)
+        return;
 
     if ( 0 != WSAStartup(MAKEWORD(2, 2), &_wsaData))
     {
         std::cout << "WSAStartup error: " << GetLastError() << "\n";
     }
-
-    //if ( 0 != )
 
 #endif
 }
@@ -122,6 +128,17 @@ void msock::Socket::close()
     this->closesocket();
 }
 
+msock::Socket::Socket(const Socket & s)
+{
+#if defined(OS_WINDOWS)
+    this->_socket = s._socket;
+    this->_wsaData = s._wsaData;
+    ++_amount;
+#else
+    this->_socket = s._socket;
+
+#endif
+}
 
 
 msock::Socket::~Socket()
@@ -130,7 +147,13 @@ msock::Socket::~Socket()
         closesocket();
 
 #if defined(OS_WINDOWS)
-    WSACleanup();
+    if (0 == _amount)
+    {
+        WSACleanup();
+        return;
+    }
+
+    --_amount;
 #endif
 }
 

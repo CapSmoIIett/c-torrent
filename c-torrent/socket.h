@@ -1,16 +1,16 @@
 
 #pragma once
 
-#ifndef INVALID_SOCKET
-    #define INVALID_SOCKET -1
-#endif
-
 #if defined(_WIN32) || defined(_WIN64)
 	#define OS_WINDOWS
 #elif defined(__unix__) || defined(__unix) || (defined(__APPLE__) && defined(__MACH__))
 	#define OS_POSIX
 #else
 	#error unsupported platform
+#endif
+
+#ifndef INVALID_SOCKET
+    #define INVALID_SOCKET -1
 #endif
 
 #if defined(OS_WINDOWS)
@@ -27,14 +27,13 @@
 	#include <stdlib.h>
 
     #include <arpa/inet.h>
-#include <errno.h>
-#include <netdb.h>
-#include <stdlib.h>
-#include <string.h>
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <unistd.h>
-
+    #include <errno.h>
+    #include <netdb.h>
+    #include <stdlib.h>
+    #include <string.h>
+    #include <sys/types.h>
+    #include <sys/socket.h>
+    #include <unistd.h>
 #endif
 
 #include <string>
@@ -50,6 +49,8 @@ public:
 
     Socket();
     ~Socket();
+
+    Socket(const Socket &);
 
     void socket();
 
@@ -85,7 +86,10 @@ public:
 private:
 #if defined(OS_WINDOWS)
     SOCKET _socket = INVALID_SOCKET;
-    WSADATA _wsaData = { 0 };
+    WSADATA _wsaData;
+
+    // static inline unsigned int _amount;  // only for c++17
+    static unsigned int _amount;
 #else
     int _socket = -1;
 
