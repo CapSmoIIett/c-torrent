@@ -7,7 +7,7 @@ msock::Socket::Socket()
 
     if ( 0 != WSAStartup(MAKEWORD(2, 2), &_wsaData))
     {
-        std::cout << "WSAStartup error " << GetLastError() << "\n";
+        std::cout << "WSAStartup error: " << GetLastError() << "\n";
     }
 
     //if ( 0 != )
@@ -21,13 +21,7 @@ void msock::Socket::socket()
 
     if (_socket == INVALID_SOCKET) 
     {
-        std::cout << "socket error ";
-
-        #if defined(OS_WINDOWS)
-            std::cout << GetLastError();
-        #endif
-
-        std::cout << "\n";
+        std::cout << "socket error: " << GetLastError() << "\n";
     }
 }
 
@@ -43,7 +37,7 @@ void msock::Socket::connect(sockaddr_in addr)
 #endif
     if(S_ERROR == res)
     {
-        std::cout << "connect error " << GetLastError() << "\n";
+        std::cout << "connect error: " << GetLastError() << "\n";
     }
 }
 
@@ -61,7 +55,7 @@ void msock::Socket::send(std::string msg)
 
     if (S_ERROR == res)
     {
-        std::cout << "send error " << GetLastError() << "\n";
+        std::cout << "send error: " << GetLastError() << "\n";
     }
 }
 
@@ -83,12 +77,12 @@ std::string msock::Socket::recv()
 
     if (res == 0)
     {
-        std::cout << "closed " << GetLastError() << "\n";
+        std::cout << "closed: " << GetLastError() << "\n";
         // closed
     }
     else if (res < 0)
     {
-        std::cout << "error " << GetLastError() << "\n";
+        std::cout << "error: " << GetLastError() << "\n";
         // error
     }
 
@@ -117,7 +111,7 @@ void msock::Socket::closesocket()
 
     if (S_ERROR == res)
     {
-        std::cout << "closesocket error" << GetLastError() << "\n";
+        std::cout << "closesocket error: " << GetLastError() << "\n";
     }
 
     _socket = INVALID_SOCKET;
