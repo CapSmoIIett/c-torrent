@@ -12,7 +12,7 @@
 #define TEST_FILE_1 "Armageddon.torrent"
 #define TEST_FILE_2 "sample.torrent"
 
-TEST(REQUESR_TEST, TestRequest) 
+TEST(REQUESR_TEST, TestGetPeers) 
 {
     TFileParser parser;
     parser.parse_file(TFileParser::open_file(TEST_FILE_2));
