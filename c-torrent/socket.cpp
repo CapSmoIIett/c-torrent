@@ -132,7 +132,7 @@ void msock::Socket::close()
 
 msock::Socket::~Socket()
 {
-    if (_socket == INVALID_SOCKET)
+    if (_socket != INVALID_SOCKET)
         closesocket();
 
 #if defined(OS_WINDOWS)
