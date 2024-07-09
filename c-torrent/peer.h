@@ -10,6 +10,7 @@ struct Peer
 {
     Peer() = default;
     Peer(std::vector<int> ip_port);
+    Peer(const Peer&) = default;
 
     void connect();
     std::string request_get_peer_id(MetaInfo minfo);
@@ -19,5 +20,5 @@ struct Peer
     int ip[4] = {0};
     int port = 0;
 
-    msock::Socket sock = { };
+    msock::Socket sock;
 };
