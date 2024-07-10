@@ -81,5 +81,12 @@ TEST(REQUESR_TEST, PeerIdTest)
 
 TEST(REQUESR_TEST, DownloadPieceTest) 
 {
-    //download_piece_command(TEST_FILE_2, "", 0);
+    system("pause");
+    TFileParser parser;
+
+    parser.parse_file(TFileParser::open_file(TEST_FILE_2));
+
+    BitTorrent torrent(get_meta_info(parser));
+
+    torrent.download_piece();
 }

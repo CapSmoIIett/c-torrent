@@ -104,3 +104,59 @@ std::vector<Peer> BitTorrent::request_get_peers()
 
 }
 
+std::vector<uint8_t> create_msg ()
+{
+    // const uint8_t msg_ID = 2;
+    std::vector<uint8_t> msg;
+    std::vector<uint8_t> payload;
+    uint32_t total_length = 4                 // message length (4 bytes)
+                            + 1               // message ID (1 byte)
+                            + payload.size(); // payload length (variable)
+
+    msg.reserve(total_length);
+
+    // actual message length
+    uint32_t networkLength = htonl(total_length - 4);
+
+    const uint8_t *lengthBytes = reinterpret_cast<const uint8_t *>(&networkLength);
+
+    // write length of msg
+    msg.insert(msg.end(), lengthBytes, lengthBytes + sizeof(networkLength));
+    // write message id
+    msg.push_back(static_cast<uint8_t>(INTERESTED));
+    msg.insert(msg.end(), payload.begin(), payload.end());
+
+    std::cout << (char*)msg.data() << "\n";
+
+    return msg;
+}
+
+
+std::string BitTorrent::download_piece()
+{
+    auto arr = request_get_peers();
+
+    auto& peer = arr[0];
+    auto msg = create_msg();
+
+    std::cout << (char*)msg.data() << "\n";
+
+    peer.connect();
+    auto& sock = peer.sock;
+
+    peer.request_get_peer_id(minfo);
+
+    auto res = sock.recv();
+    std::cout << res << "\n";
+    std::cout << "size: " << get_msg_size(res) << "\n";
+    std::cout << "type: " << get_msg_type(res) << "\n";
+
+    sock.send(msg);
+
+    res = sock.recv();
+    std::cout << res << "\n";
+    std::cout << "size: " << get_msg_size(res) << "\n";
+    std::cout << "type: " << get_msg_type(res) << "\n";
+
+    return "";
+}
