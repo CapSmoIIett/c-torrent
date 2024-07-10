@@ -104,14 +104,15 @@ std::vector<Peer> BitTorrent::request_get_peers()
 
 }
 
-std::vector<uint8_t> create_msg ()
+std::vector<uint8_t> create_msg (const uint8_t type, std::string payload = std::string())
 {
     // const uint8_t msg_ID = 2;
     std::vector<uint8_t> msg;
-    std::vector<uint8_t> payload;
+    std::vector<uint8_t> _payload (payload.begin(), payload.end());
+
     uint32_t total_length = 4                 // message length (4 bytes)
                             + 1               // message ID (1 byte)
-                            + payload.size(); // payload length (variable)
+                            + _payload.size(); // payload length (variable)
 
     msg.reserve(total_length);
 
@@ -123,10 +124,8 @@ std::vector<uint8_t> create_msg ()
     // write length of msg
     msg.insert(msg.end(), lengthBytes, lengthBytes + sizeof(networkLength));
     // write message id
-    msg.push_back(static_cast<uint8_t>(INTERESTED));
-    msg.insert(msg.end(), payload.begin(), payload.end());
-
-    std::cout << (char*)msg.data() << "\n";
+    msg.push_back(static_cast<uint8_t>(type));
+    msg.insert(msg.end(), _payload.begin(), _payload.end());
 
     return msg;
 }
@@ -137,7 +136,7 @@ std::string BitTorrent::download_piece()
     auto arr = request_get_peers();
 
     auto& peer = arr[0];
-    auto msg = create_msg();
+    auto msg = create_msg(INTERESTED);
 
     std::cout << (char*)msg.data() << "\n";
 
