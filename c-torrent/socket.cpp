@@ -49,7 +49,7 @@ void msock::Socket::connect(sockaddr_in addr)
 
 
 
-void msock::Socket::send(std::string msg)
+void msock::Socket::send(const std::string msg)
 {
     int res = 0;
 
@@ -65,7 +65,29 @@ void msock::Socket::send(std::string msg)
     }
 }
 
-void msock::Socket::write(std::string msg)
+void msock::Socket::send(const std::vector<uint8_t> msg)
+{
+    int res = 0;
+
+#if defined(OS_WINDOWS)
+    res = ::send(_socket, reinterpret_cast<const char*>(msg.data()), msg.size(), 0);
+#else
+    res = ::write(_socket, reinterpret_cast<const char*>(msg.data()), msg.size());
+#endif
+
+    if (S_ERROR == res)
+    {
+        std::cout << "send error: " << GetLastError() << "\n";
+    }
+
+}
+
+void msock::Socket::write(const std::string msg)
+{
+    this->send(msg);
+}
+
+void msock::Socket::write(const std::vector<uint8_t> msg)
 {
     this->send(msg);
 }
@@ -108,11 +130,15 @@ void msock::Socket::closesocket()
     int res = 0;
 
 #if defined(OS_WINDOWS)
-    if (INVALID_SOCKET != _socket)
-        res = ::closesocket(_socket);
+    if (INVALID_SOCKET == _socket)
+        return;
+
+    res = ::closesocket(_socket);
 #else
     if (-1 == _socket)
-        res = ::close(_socket);
+        return;
+
+    res = ::close(_socket);
 #endif
 
     if (S_ERROR == res)
@@ -120,7 +146,11 @@ void msock::Socket::closesocket()
         std::cout << "closesocket error: " << GetLastError() << "\n";
     }
 
+#if defined(OS_WINDOWS)
     _socket = INVALID_SOCKET;
+#else
+    _socket = -1;
+#endif
 }
 
 void msock::Socket::close()

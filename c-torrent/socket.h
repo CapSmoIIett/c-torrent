@@ -37,6 +37,7 @@
 #endif
 
 #include <string>
+#include <vector>
 #include <memory>
 #include <iostream>
 
@@ -56,8 +57,11 @@ public:
 
     void connect(sockaddr_in);
 
-    void send(std::string);
-    void write(std::string);
+    void send(const std::string);
+    void send(const std::vector<uint8_t>);
+
+    void write(const std::string);
+    void write(const std::vector<uint8_t>);
 
     std::string recv();
     std::string read();
