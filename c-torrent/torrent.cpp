@@ -169,3 +169,70 @@ std::string BitTorrent::download_piece()
 
     return "";
 }
+
+
+#include <iostream>
+#include <fstream>
+
+void BitTorrent::download (std::string file_name)
+{
+    auto arr = request_get_peers();
+
+    auto& peer = arr[0];
+    auto msg = create_msg(INTERESTED);
+
+    std::cout << (char*)msg.data() << "\n";
+
+    peer.connect();
+    auto& sock = peer.sock;
+
+    peer.request_get_peer_id(minfo);
+
+    auto res = sock.recv();
+
+    sock.send(msg);
+
+    res = sock.recv();
+
+    auto pieces = get_pieces(minfo.info._pieces);
+
+    std::ofstream file;
+    file.open (file_name);
+
+    for (int i = 0; i < pieces.size(); ++i)
+    {
+        msg = create_msg(REQUEST, create_payload_request(i, 0, 16 * KB));
+        auto a = create_msg(REQUEST, create_payload_request(i, 16 * KB, 16 * KB));
+
+        msg.insert(msg.end(), a.begin(), a.end());
+        sock.send(msg);
+
+        auto first_half = sock.recv();
+
+       // msg = create_msg(REQUEST, create_payload_request(i, 16 * KB, 16 * KB));
+        //sock.send(msg);
+
+        auto second_half = sock.recv();
+
+        first_half = get_msg_piece(first_half) + get_msg_piece(second_half);
+
+        SHA1 hash;
+
+        hash.update(std::string(reinterpret_cast<const char *>(first_half.data())));
+
+        std::cout << "hash: " << pieces[i] << "\n";
+        std::cout << "piece: " << hash.final() << "\n";
+        //std::cout << "str: " << first_half << "\n";
+
+        if (pieces[i] != hash.final())
+        {
+            //continue;
+        }
+
+
+        file << first_half;
+    }
+
+    file.close();
+
+}

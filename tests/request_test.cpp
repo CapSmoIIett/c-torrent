@@ -88,5 +88,5 @@ TEST(REQUESR_TEST, DownloadPieceTest)
 
     BitTorrent torrent(get_meta_info(parser));
 
-    torrent.download_piece();
+    torrent.download("_" + torrent.minfo.info._name);
 }

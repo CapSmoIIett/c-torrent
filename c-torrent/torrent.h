@@ -32,6 +32,8 @@ public:
     
     std::string download_piece();
 
+    void download (std::string file_name);
+
     MetaInfo minfo;
 
 private:
@@ -84,6 +86,17 @@ inline std::vector<uint8_t> get_msg_piece(std::vector<uint8_t> msg)
         4;  // offset
 
     return std::vector<uint8_t>(msg.begin() + header_size, msg.end());
+}
+
+inline std::string get_msg_piece(std::string msg)
+{
+    size_t header_size = 
+        4 + // size
+        1 + // type
+        4 + // index
+        4;  // offset
+
+    return std::string(msg.begin() + header_size, msg.end());
 }
 
 inline std::vector<uint8_t> create_payload_request(const uint32_t index, const uint32_t begin, const uint32_t length)
