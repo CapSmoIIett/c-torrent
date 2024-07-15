@@ -21,9 +21,9 @@ msock::Socket::Socket()
 #endif
 }
 
-void msock::Socket::socket()
+void msock::Socket::socket(int family, int sock_type, int protocol)
 {
-    _socket = ::socket(AF_INET, SOCK_STREAM, 0);
+    _socket = ::socket(family, sock_type, protocol);
 
     if (_socket == INVALID_SOCKET) 
     {
@@ -33,6 +33,21 @@ void msock::Socket::socket()
 
 
 void msock::Socket::connect(sockaddr_in addr)
+{
+    int res = 0;
+
+#if defined(OS_WINDOWS)
+    res = ::connect(_socket, (SOCKADDR*) &addr, sizeof(addr));
+#else
+    res = ::connect(_socket, (const struct sockaddr *) &addr, sizeof(addr));
+#endif
+    if(S_ERROR == res)
+    {
+        std::cout << "connect error: " << GetLastError() << "\n";
+    }
+}
+
+void msock::Socket::connect(sockaddr addr)
 {
     int res = 0;
 

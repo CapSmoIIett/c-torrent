@@ -18,7 +18,7 @@ Peer::Peer(std::vector<int> ip_port)
 
 void Peer::connect()
 {
-    sock.socket();
+    sock.socket(AF_INET, SOCK_STREAM, 0);
 
     auto peer_ip = std::to_string(ip[0]) + "." + std::to_string(ip[1]) + "." +
         std::to_string(ip[2]) + "." + std::to_string(ip[3]);

@@ -53,9 +53,10 @@ public:
 
     Socket(const Socket &);
 
-    void socket();
+    void socket(int family, int sock_type, int protocol);
 
     void connect(sockaddr_in);
+    void connect(sockaddr);
 
     void send(const std::string);
     void send(const std::vector<uint8_t>);
