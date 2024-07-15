@@ -8,7 +8,7 @@ static std::string Bencoder::encode()
 }
 */
 
-std::string Bencoder::encode(std::string str)
+std::string Bencoder::encode(const std::string& str)
 {
     if (std::isdigit(str[0]) ||
         (2 <= str.size() && 
@@ -20,7 +20,7 @@ std::string Bencoder::encode(std::string str)
     return std::to_string(str.size()) + ":" + str;
 }
 
-std::string Bencoder::encode(std::vector<std::string> elements)
+std::string Bencoder::encode(const std::vector<std::string>& elements)
 {
     if (elements.empty())
         return "";
@@ -51,7 +51,7 @@ std::string Bencoder::encode(std::vector<std::string> elements)
     return result; 
 }
 
-std::vector<std::string> Bencoder::decode(std::string input)
+std::vector<std::string> Bencoder::decode(const std::string& input)
 {
     if (3 > input.size())
         return {""};

@@ -6,9 +6,9 @@
 class Bencoder
 {
 public:
-    static std::string encode(std::string);
-    static std::string encode(std::vector<std::string>);
-    static std::vector<std::string> decode(std::string input);
+    static std::string encode(const std::string&);
+    static std::string encode(const std::vector<std::string>&);
+    static std::vector<std::string> decode(const std::string& input);
 
 private:
     static std::string decode_string(const std::string& str, size_t it, size_t* end = nullptr);
