@@ -4,6 +4,7 @@
 #include "../c-torrent/bencoder.h"
 
 #include "httplib/httplib.h"
+#include "socket.h"
 
 std::tuple<std::string, std::string> split_domain_and_endpoint(const std::string& tracker_url) 
 {
@@ -55,53 +56,97 @@ std::vector<Peer> decode_peers(std::string& encoded_peers)
 
 std::vector<Peer> BitTorrent::request_get_peers()
 {
-    size_t port = 6881;
-    size_t uploaded = 0;
-    size_t downloaded = 0;
-    size_t compact = 1;
-
-    httplib::Params params{
-        {"peer_id", "00112233445566778899"},
-        { "port", std::to_string(port)},
-        {"uploaded", "0"},
-        {"downloaded", "0"},
-        { "left", minfo.info.length},
-        {"compact", "1"}
-    };
-
-    httplib::Headers headers{};
-
-    auto domain_and_endpoint = split_domain_and_endpoint(minfo.announce);
-
-    //httplib::Client cli(minfo.announce);
-    //auto res = cli.Get("", headers);
-
-    httplib::Client cli(std::get<0>(domain_and_endpoint));
-    auto res = cli.Get(
-        std::get<1>(domain_and_endpoint) + "?info_hash=" + 
-            encode_info_hash(calculate_info_hash(minfo)),
-        params,
-        headers
-    );
-
-    if (httplib::Error::Success != res.error())
+    //if (std::string::npos != minfo.announce.find("http"))
     {
-        std::cout << httplib::to_string(res.error()) << "\n";
-        return {};
+        auto domain_and_endpoint = split_domain_and_endpoint(minfo.announce);
+        size_t port = 6881;
+        size_t uploaded = 0;
+        size_t downloaded = 0;
+        size_t compact = 1;
+
+        httplib::Params params{
+            {"peer_id", "00112233445566778899"},
+            { "port", std::to_string(port)},
+            {"uploaded", "0"},
+            {"downloaded", "0"},
+            { "left", minfo.info.length},
+            {"compact", "1"}
+        };
+
+        httplib::Headers headers{};
+
+        //httplib::Client cli(minfo.announce);
+        //auto res = cli.Get("", headers);
+
+        httplib::Client cli(std::get<0>(domain_and_endpoint));
+        auto res = cli.Get(
+            std::get<1>(domain_and_endpoint) + "?info_hash=" + 
+                encode_info_hash(calculate_info_hash(minfo)),
+            params,
+            headers
+        );
+
+        if (httplib::Error::Success != res.error())
+        {
+            std::cout << httplib::to_string(res.error()) << "\n";
+            return {};
+        }
+
+        auto str = Bencoder::decode(res->body);
+        
+        auto it = std::find(str.begin(), str.end(), "peers");
+
+        if (str.end() == it)
+            return {};
+
+        if (str.end() == ++it)
+            return {};
+
+        return decode_peers(*it);
+    }
+    if (std::string::npos != minfo.announce.find("udp"))
+    {
+        /*
+        msock::Socket socket;
+
+        auto colon_index = minfo.announce.find_last_of(":");
+        auto url = minfo.announce.substr(0, colon_index);
+        auto port = minfo.announce.substr(colon_index + 1, minfo.announce.size() - colon_index);
+
+
+        addrinfo* result = nullptr;
+        addrinfo hints;
+
+        ZeroMemory(&hints, sizeof(hints));
+        hints.ai_family = AF_INET;
+        hints.ai_socktype = SOCK_STREAM;
+        hints.ai_protocol = IPPROTO_TCP;
+
+        getaddrinfo(url.c_str(), port.c_str(), &hints, &result);
+
+        socket.socket(result->ai_family, result->ai_socktype, result->ai_protocol);
+
+        socket.connect(*(result->ai_addr));
+
+        std::string request = std::string("GET ") + resource + query + " HTTP/1.1\r\nHost: " + minfo.announce + "\r\nConnection: close\r\n\r\n";
+                + "?info_hash="
+                + encode_info_hash(calculate_info_hash(minfo))
+                + "peer_id"
+                + "00112233445566778899" 
+                + "port" 
+                + std::to_string(port)
+                + "uploaded"
+                + "0"
+                + "downloaded"
+                + "0"
+                + "left", 
+                + minfo.info.length
+                + "compact"
+                + "1"
+        */
     }
 
-    auto str = Bencoder::decode(res->body);
-    
-    auto it = std::find(str.begin(), str.end(), "peers");
-
-    if (str.end() == it)
-        return {};
-
-    if (str.end() == ++it)
-        return {};
-
-    return decode_peers(*it);
-
+    return {};
 }
 
 
@@ -178,7 +223,7 @@ void BitTorrent::download (std::string file_name)
 {
     auto arr = request_get_peers();
 
-    auto& peer = arr[0];
+    auto& peer = arr[2];
     auto msg = create_msg(INTERESTED);
 
     std::cout << (char*)msg.data() << "\n";
@@ -188,50 +233,90 @@ void BitTorrent::download (std::string file_name)
 
     peer.request_get_peer_id(minfo);
 
-    auto res = sock.recv();
+    //auto res = sock.recv();
 
     sock.send(msg);
 
-    res = sock.recv();
+    auto res = sock.recv();
 
     auto pieces = get_pieces(minfo.info._pieces);
 
-    std::ofstream file;
-    file.open (file_name);
+    size_t piece_length = std::stoi(minfo.info._piece_length);
 
-    for (int i = 0; i < pieces.size(); ++i)
+    // std::ofstream file;
+    // file.open (file_name);
+    std::ofstream file(file_name, std::ios::binary);
+
+
+    for (int i = 0; i < pieces.size() ; ++i)
+    //int i = 0;
     {
-        msg = create_msg(REQUEST, create_payload_request(i, 0, 16 * KB));
-        auto a = create_msg(REQUEST, create_payload_request(i, 16 * KB, 16 * KB));
 
-        msg.insert(msg.end(), a.begin(), a.end());
+    //system("pause");
+        Sleep(100);
+
+        msg = create_msg(REQUEST, create_payload_request(i, 0, piece_length / 2));
+        auto a = create_msg(REQUEST, create_payload_request(i, piece_length / 2, piece_length / 2));
+
+        //msg = create_msg(REQUEST, create_payload_request(i, 0, 16 * KB));
+        //auto a = create_msg(REQUEST, create_payload_request(i, 16 * KB, 16 * KB));
+
+        //msg.insert(msg.end(), a.begin(), a.end());
         sock.send(msg);
+
+        Sleep(100);
 
         auto first_half = sock.recv();
 
+        Sleep(100);
        // msg = create_msg(REQUEST, create_payload_request(i, 16 * KB, 16 * KB));
         //sock.send(msg);
 
+        sock.send(a);
+
+        Sleep(100);
+
         auto second_half = sock.recv();
 
-        first_half = get_msg_piece(first_half) + get_msg_piece(second_half);
+        std::cout << "size1: " << first_half.size() << "  " << get_msg_size(first_half) << "\n";
+        std::cout << "size2: " << second_half.size() << "  " << get_msg_size(first_half) << "\n";
+
+        first_half = get_msg_piece(first_half);
+        if (!second_half.empty())
+            second_half = get_msg_piece(second_half);
+
+        if (!second_half.empty())
+            first_half.insert(first_half.end(), second_half.begin(), second_half.end());
 
         SHA1 hash;
 
         hash.update(std::string(reinterpret_cast<const char *>(first_half.data())));
 
+        auto h  = hash.final();
+
         std::cout << "hash: " << pieces[i] << "\n";
-        std::cout << "piece: " << hash.final() << "\n";
-        //std::cout << "str: " << first_half << "\n";
+        std::cout << "piece: " << h << "\n";
 
-        if (pieces[i] != hash.final())
+        /*
+        if (pieces[i] != h)
         {
-            //continue;
+            std::cout << "well shit" << "\n";
+            i--;
+            continue;
         }
+        */
 
-
-        file << first_half;
+        file.write(first_half.data(), piece_length);
     }
+
+    /*
+        auto first_half = sock.recv();
+
+        auto second_half = sock.recv();
+
+        file << first_half.data();
+        file << second_half.data();
+    */
 
     file.close();
 
