@@ -30,23 +30,30 @@ TEST(REQUESR_TEST, TestGetPeers)
 
 
 #include <iostream>
-TEST(REQUESR_TEST, TestRequest2) 
+TEST(REQUESR_TEST, TestGetPeers2) 
 {
     /*
-    
     system("pause");
     TFileParser parser;
-
     parser.parse_file(TFileParser::open_file(TEST_FILE_1));
 
-    auto arr = request_get_nodes(get_meta_info(parser));
+    BitTorrent torrent(get_meta_info(parser));
 
+    auto arr = torrent.request_get_peers();
+    //COMPARE_ARRAY_EQ({
+    //    Peer({ 165, 232, 33, 77, 51467 }),
+    //    Peer({ 178, 62, 85, 20, 51489 }),
+    //    Peer({ 178, 62, 82, 89, 51448 })},
+    //);
 
     for (auto it : arr )
     {
-        for (auto i : it )
-            std::cout << i << ".";
-        std::cout << "\n";
+        std::cout 
+        << it.ip[0] << "."
+        << it.ip[1] << "."
+        << it.ip[2] << "."
+        << it.ip[3] << ":"
+        << it.port << "\n";
     }
     */
 }
@@ -54,6 +61,7 @@ TEST(REQUESR_TEST, TestRequest2)
 
 TEST(REQUESR_TEST, PeerIdTest) 
 {
+    system("pause");
     TFileParser parser;
 
     parser.parse_file(TFileParser::open_file(TEST_FILE_2));
@@ -69,12 +77,17 @@ TEST(REQUESR_TEST, PeerIdTest)
         arr//torrent.request_get_peers()
     );
 
-    auto peer = arr[0];
+    auto peer = arr[1];
 
     peer.connect();
+
+    std::vector<std::string> ids = {
+    "2d524e302e302e302d5af5c2cf488815c4a2fa7f",
+    "2d524e302e302e302d0df778d11e39f854451c24"
+    };
     
     EXPECT_EQ(
-        "2d524e302e302e302d5af5c2cf488815c4a2fa7f",
+        ids[1],
         peer.request_get_peer_id(torrent.minfo)
     );
 }
