@@ -109,7 +109,7 @@ void msock::Socket::write(const std::vector<uint8_t> msg)
 
 std::string msock::Socket::recv()
 {
-    char buffer[1024];
+    char buffer[17 * 1024];
     int res = 0;
 
 #if defined(OS_WINDOWS)
@@ -137,6 +137,33 @@ std::string msock::Socket::recv()
 std::string msock::Socket::read()
 {
     return this->recv();
+}
+
+std::vector<uint8_t> msock::Socket::_recv()
+{
+    char buffer[16 * 1024];
+    int res = 0;
+
+#if defined(OS_WINDOWS)
+    res = ::recv(_socket, buffer, sizeof(buffer), 0);
+#else
+    res = ::read(_socket, buffer, sizeof(buffer));
+#endif
+
+    if (res == 0)
+    {
+        std::cout << "closed: " << GetLastError() << "\n";
+        // closed
+    }
+    else if (res < 0)
+    {
+        std::cout << "error: " << GetLastError() << "\n";
+        // error
+    }
+
+    std::vector<uint8_t> response((unsigned char)buffer, res);
+
+    return response;
 }
 
 
