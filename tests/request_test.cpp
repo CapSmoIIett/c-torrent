@@ -33,7 +33,6 @@ TEST(REQUESR_TEST, TestGetPeers)
 TEST(REQUESR_TEST, TestGetPeers2) 
 {
     /*
-    system("pause");
     TFileParser parser;
     parser.parse_file(TFileParser::open_file(TEST_FILE_1));
 
@@ -61,7 +60,6 @@ TEST(REQUESR_TEST, TestGetPeers2)
 
 TEST(REQUESR_TEST, PeerIdTest) 
 {
-    system("pause");
     TFileParser parser;
 
     parser.parse_file(TFileParser::open_file(TEST_FILE_2));
@@ -94,7 +92,6 @@ TEST(REQUESR_TEST, PeerIdTest)
 
 TEST(REQUESR_TEST, DownloadPieceTest) 
 {
-    system("pause");
     TFileParser parser;
 
     parser.parse_file(TFileParser::open_file(TEST_FILE_2));
