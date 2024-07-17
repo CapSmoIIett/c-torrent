@@ -69,8 +69,6 @@ public:
     std::string recv();
     std::string read();
 
-    std::vector<uint8_t> _recv();
-
     void closesocket();
     void close();
 
