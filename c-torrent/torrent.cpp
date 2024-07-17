@@ -253,7 +253,7 @@ void BitTorrent::download (std::string file_name)
     {
 
     //system("pause");
-        Sleep(100);
+        msock::sleep(100);
 
         msg = create_msg(REQUEST, create_payload_request(i, 0, piece_length / 2));
         auto a = create_msg(REQUEST, create_payload_request(i, piece_length / 2, piece_length / 2));
@@ -264,17 +264,17 @@ void BitTorrent::download (std::string file_name)
         //msg.insert(msg.end(), a.begin(), a.end());
         sock.send(msg);
 
-        Sleep(100);
+        msock::sleep(100);
 
         auto first_half = sock.recv();
 
-        Sleep(100);
+        msock::sleep(100);
        // msg = create_msg(REQUEST, create_payload_request(i, 16 * KB, 16 * KB));
         //sock.send(msg);
 
         sock.send(a);
 
-        Sleep(100);
+        msock::sleep(100);
 
         auto second_half = sock.recv();
 

@@ -1,6 +1,9 @@
 
 #include "socket.h"
 
+#include <chrono>
+#include <thread>
+
 
 #if defined(OS_WINDOWS)
     unsigned int msock::Socket::_amount = 0;
@@ -274,4 +277,9 @@ std::string msock::Socket::GetLastError()
 #endif
 
     return answer;
+}
+
+void msock::sleep(const int64_t time)
+{
+   std::this_thread::sleep_for(std::chrono::milliseconds(time)); 
 }

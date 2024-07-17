@@ -41,8 +41,10 @@
 #include <memory>
 #include <iostream>
 
+
 namespace msock
 {
+
 
 class Socket final 
 {
@@ -104,5 +106,6 @@ private:
 
 };
 
+void sleep(const int64_t time);
 
 }
