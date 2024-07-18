@@ -99,4 +99,7 @@ TEST(REQUESR_TEST, DownloadPieceTest)
     BitTorrent torrent(get_meta_info(parser));
 
     torrent.download("_" + torrent.minfo.info._name);
+
+    COMPARE_FILES_EQ(torrent.minfo.info._name, "_" + torrent.minfo.info._name);
 }
+
