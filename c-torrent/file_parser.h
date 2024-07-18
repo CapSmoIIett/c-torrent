@@ -18,6 +18,9 @@ public:
     std::string get_pieces() const;
     std::vector<std::string> get_announce_list() const;
     std::string get_field(const std::string& field) const;
+
+    bool isSingleFile() const;
+
     void parse_file(const std::string& file);
 
     static std::string open_file (const std::string& file_name);

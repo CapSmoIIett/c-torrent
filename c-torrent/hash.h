@@ -17,10 +17,18 @@ inline MetaInfo get_meta_info(TFileParser parser)
     minfo.encoding = parser.get_encoding();
 
 
-    minfo.info.length = parser.get_size();
     minfo.info._name = parser.get_name();
     minfo.info._piece_length = parser.get_plength();
     minfo.info._pieces = parser.get_pieces();
+
+    if (parser.isSingleFile())
+    {
+        minfo.info.length = parser.get_size();
+    }
+    else
+    {
+        // For fiew files
+    }
 
     return minfo;
 }

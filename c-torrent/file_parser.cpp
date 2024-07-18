@@ -82,6 +82,11 @@ std::vector<std::string> TFileParser::get_announce_list() const
     return result;
 }
 
+bool TFileParser::isSingleFile() const
+{
+    return get_field("files").empty();
+}
+
 void TFileParser::parse_file(const std::string& file) 
 {
     this->file_data = Bencoder::decode(file);
