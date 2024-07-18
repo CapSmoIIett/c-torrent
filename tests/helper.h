@@ -79,3 +79,39 @@ void COMPARE_ARRAY_NE(std::vector<std::vector<T>> l, std::vector<std::vector<T>>
         }
     }
 }
+
+#include <fstream>
+
+inline void COMPARE_FILES_EQ(const std::string& name_left, const std::string& name_right)
+{
+    std::ifstream file_left(name_left, std::ios::binary);
+    std::ifstream file_right(name_right, std::ios::binary);
+
+    if (!file_left.is_open())
+        EXPECT_TRUE(file_left.is_open());
+
+    if (!file_right.is_open())
+        EXPECT_TRUE(file_right.is_open());
+
+    std::istreambuf_iterator<char> it_left(file_left);
+    std::istreambuf_iterator<char> it_right(file_right);
+    std::istreambuf_iterator<char> end;
+
+    size_t symbol = 0;
+    while(it_left != end && it_right != end) 
+    { 
+        if(*it_left != *it_right) 
+        {
+            EXPECT_EQ(*it_left, *it_right) 
+                << "Characters are different. Left: " << *it_left << " Right: " << *it_right << " i: " << symbol;
+            return;
+        }
+
+        ++symbol;
+        ++it_left;
+        ++it_right;
+    }
+
+    EXPECT_EQ(it_left == end, it_right == end);
+
+}
