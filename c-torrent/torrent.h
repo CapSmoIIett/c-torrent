@@ -49,6 +49,9 @@ inline std::vector<uint8_t> str_to_bytes(std::string str)
 
 inline uint32_t get_msg_size(std::vector<uint8_t> msg)
 {
+    if (4 > msg.size())
+        //error
+        return -1;
     return (msg[0] << 24) + (msg[1] << 16) + (msg[2] << 8) + msg[3];
 }
 
@@ -60,6 +63,10 @@ inline uint32_t get_msg_size(std::string msg)
 inline uint8_t get_msg_type(std::vector<uint8_t> msg)
 {
     // uint8_t to int
+    if (5 > msg.size())
+        //error
+        return -1;
+
     return static_cast<int>(msg[4]);
 }
 
@@ -70,6 +77,10 @@ inline int get_msg_type(std::string msg)
 
 inline uint32_t get_msg_piece_index(std::vector<uint8_t> msg)
 {
+    if (9 > msg.size())
+        //error
+        return -1;
+
     return (msg[5] << 24) + (msg[6] << 16) + (msg[7] << 8) + msg[8];
 }
 
@@ -85,6 +96,10 @@ inline std::vector<uint8_t> get_msg_piece(std::vector<uint8_t> msg)
         4 + // index
         4;  // offset
 
+    if (header_size > msg.size())
+        // error
+        return msg;
+
     return std::vector<uint8_t>(msg.begin() + header_size, msg.end());
 }
 
@@ -95,6 +110,10 @@ inline std::string get_msg_piece(std::string msg)
         1 + // type
         4 + // index
         4;  // offset
+
+    if (header_size > msg.size())
+        // error
+        return msg;
 
     return std::string(msg.begin() + header_size, msg.end());
 }
