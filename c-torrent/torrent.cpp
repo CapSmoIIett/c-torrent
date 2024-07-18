@@ -218,12 +218,16 @@ std::string BitTorrent::download_piece()
 
 #include <iostream>
 #include <fstream>
+#include <random>
 
 void BitTorrent::download (std::string file_name)
 {
     auto arr = request_get_peers();
 
-    auto& peer = arr[2];
+    srand(time(0));
+    int peernum = rand() % (arr.size() - 1);
+    std::cout << peernum << "\n";
+    auto& peer = arr[peernum];
 
     peer.connect();
     auto& sock = peer.sock;
