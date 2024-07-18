@@ -224,9 +224,6 @@ void BitTorrent::download (std::string file_name)
     auto arr = request_get_peers();
 
     auto& peer = arr[2];
-    auto msg = create_msg(INTERESTED);
-
-    std::cout << (char*)msg.data() << "\n";
 
     peer.connect();
     auto& sock = peer.sock;
@@ -235,6 +232,7 @@ void BitTorrent::download (std::string file_name)
 
     //auto res = sock.recv();
 
+    auto msg = create_msg(INTERESTED);
     sock.send(msg);
 
     auto res = sock.recv();
@@ -242,11 +240,24 @@ void BitTorrent::download (std::string file_name)
     auto pieces = get_pieces(minfo.info._pieces);
 
     size_t piece_length = std::stoi(minfo.info._piece_length);
+    size_t file_length = std::stoi(minfo.info.length);
+
+    std::cout << "size: " << minfo.info.length << "\n";
 
     // std::ofstream file;
     // file.open (file_name);
     std::ofstream file(file_name, std::ios::binary);
 
+    auto calculate_size = [&file_length,
+                piece_length = piece_length](){
+        if (file_length > piece_length / 2)
+        {
+            file_length -= piece_length / 2;
+            return piece_length / 2;
+        }
+        
+        return file_length;
+    };
 
     for (int i = 0; i < pieces.size() ; ++i)
     //int i = 0;
@@ -255,31 +266,27 @@ void BitTorrent::download (std::string file_name)
     //system("pause");
         msock::sleep(100);
 
-        msg = create_msg(REQUEST, create_payload_request(i, 0, piece_length / 2));
-        auto a = create_msg(REQUEST, create_payload_request(i, piece_length / 2, piece_length / 2));
 
-        //msg = create_msg(REQUEST, create_payload_request(i, 0, 16 * KB));
-        //auto a = create_msg(REQUEST, create_payload_request(i, 16 * KB, 16 * KB));
+        auto size1 = calculate_size();
+        auto msg1 = create_msg(REQUEST, create_payload_request(i, 0, size1));
 
-        //msg.insert(msg.end(), a.begin(), a.end());
-        sock.send(msg);
+        auto size2 = calculate_size();
+        auto msg2 = create_msg(REQUEST, create_payload_request(i, piece_length / 2, size2));
 
+        sock.send(msg1);
         msock::sleep(100);
-
         auto first_half = sock.recv();
 
-        msock::sleep(100);
-       // msg = create_msg(REQUEST, create_payload_request(i, 16 * KB, 16 * KB));
-        //sock.send(msg);
-
-        sock.send(a);
 
         msock::sleep(100);
 
+        sock.send(msg2);
+        msock::sleep(100);
         auto second_half = sock.recv();
 
         std::cout << "size1: " << first_half.size() << "  " << get_msg_size(first_half) << "\n";
-        std::cout << "size2: " << second_half.size() << "  " << get_msg_size(first_half) << "\n";
+        if (!second_half.empty())
+            std::cout << "size2: " << second_half.size() << "  " << get_msg_size(second_half) << "\n";
 
         first_half = get_msg_piece(first_half);
         if (!second_half.empty())
@@ -289,9 +296,7 @@ void BitTorrent::download (std::string file_name)
             first_half.insert(first_half.end(), second_half.begin(), second_half.end());
 
         SHA1 hash;
-
         hash.update(std::string(reinterpret_cast<const char *>(first_half.data())));
-
         auto h  = hash.final();
 
         std::cout << "hash: " << pieces[i] << "\n";
@@ -306,7 +311,7 @@ void BitTorrent::download (std::string file_name)
         }
         */
 
-        file.write(first_half.data(), piece_length);
+        file.write(first_half.data(), size1 + size2);
     }
 
     /*
