@@ -264,10 +264,7 @@ void BitTorrent::download (std::string file_name)
     };
 
     for (int i = 0; i < pieces.size() ; ++i)
-    //int i = 0;
     {
-
-    //system("pause");
         msock::sleep(100);
 
 
@@ -306,8 +303,9 @@ void BitTorrent::download (std::string file_name)
         std::cout << "hash: " << pieces[i] << "\n";
         std::cout << "piece: " << h << "\n";
 
+
         /*
-        if (pieces[i] != h)
+        for(int i = 0; i < 5 && pieces[i] != h; ++i)
         {
             std::cout << "well shit" << "\n";
             i--;
@@ -317,15 +315,6 @@ void BitTorrent::download (std::string file_name)
 
         file.write(first_half.data(), size1 + size2);
     }
-
-    /*
-        auto first_half = sock.recv();
-
-        auto second_half = sock.recv();
-
-        file << first_half.data();
-        file << second_half.data();
-    */
 
     file.close();
 

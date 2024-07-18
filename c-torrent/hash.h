@@ -33,8 +33,6 @@ inline MetaInfo get_meta_info(TFileParser parser)
     return minfo;
 }
 
-//#include <iostream>
-//#include <fstream>
 inline std::string calculate_info_hash(MetaInfo minfo) 
 {
     std::string str = 
@@ -45,53 +43,11 @@ inline std::string calculate_info_hash(MetaInfo minfo)
         Bencoder::encode("pieces") + std::to_string(minfo.info._pieces.size()) + ":" + minfo.info._pieces +
         "e";
 
-    /*
-    std::ofstream myfile;
-    myfile.open ("example.txt");
-    myfile << str;
-    myfile.close();
-    //*/
-
-
     SHA1 checksum;
     checksum.update(str);
 
     return checksum.final();
 }
-
-/*
-std::vector<std::string> get_pieces(const std::string& pieces_in_str)
-{
-    std::vector<std::string> result;
-
-    for (int i = 0; i < pieces_in_str.size() / 20; ++i)
-    {
-        std::string str = pieces_in_str.substr(i * 20, (i + 1) * 20);
-        char arr[41] = {'\0'};
-        //answer.resize(41);
-
-        for (int j = 0; j < 20; ++j)
-        {
-            char c = str[j];
-            arr[j * 2] = (c >> 4) + '0';
-            arr[j * 2 + 1] = (c & 0xf) + '0';
-        }
-
-        for (size_t j = 0; j < 40; ++j) {
-            if (arr[j] > '9') 
-            {
-                arr[j] = arr[j] - '9' - 1 + 'a';
-            }
-        }
-
-        std::cout << arr << "\n";
-
-        result.push_back(arr);
-    }
-
-    return result;
-}
-*/
 
 inline std::vector<std::string> get_pieces(const std::string& pieces_in_str)
 {

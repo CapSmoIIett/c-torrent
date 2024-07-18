@@ -1,13 +1,6 @@
 #include "bencoder.h"
 
 
-/*
-static std::string Bencoder::encode()
-{
-    return "";
-}
-*/
-
 std::string Bencoder::encode(const std::string& str)
 {
     if (std::isdigit(str[0]) ||

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <gtest/gtest.h>  
+#include <fstream>
 
 template<class T>
 void COMPARE_ARRAY_EQ(std::vector<T> l, std::vector<T> r)
@@ -79,8 +80,6 @@ void COMPARE_ARRAY_NE(std::vector<std::vector<T>> l, std::vector<std::vector<T>>
         }
     }
 }
-
-#include <fstream>
 
 inline void COMPARE_FILES_EQ(const std::string& name_left, const std::string& name_right)
 {
