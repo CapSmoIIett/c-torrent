@@ -79,16 +79,17 @@ TEST(REQUESR_TEST, PeerIdTest)
 
     std::vector<std::string> ids = {
     "2d524e302e302e302d5af5c2cf488815c4a2fa7f",
-    "2d524e302e302e302d0df778d11e39f854451c24"
+    "2d524e302e302e302d0df778d11e39f854451c24",
+    "2d524e302e302e302d71436ef031d3d90fc6cb18"
     };
     
     EXPECT_EQ(
-        ids[1],
+        ids[2],
         peer.request_get_peer_id(torrent.minfo)
     );
 }
 
-TEST(REQUESR_TEST, DownloadPieceTest) 
+TEST(REQUESR_TEST, DownloadTest) 
 {
     TFileParser parser;
 
