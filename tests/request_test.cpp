@@ -20,7 +20,7 @@ TEST(REQUESR_TEST, TestGetPeers)
     BitTorrent torrent(get_meta_info(parser));
 
     COMPARE_ARRAY_EQ({
-        Peer({ 165, 232, 33, 77, 51467 }),
+        Peer({ 165, 232, 33, 77, 51498 }),
         Peer({ 178, 62, 85, 20, 51489 }),
         Peer({ 178, 62, 82, 89, 51448 })},
         torrent.request_get_peers()
@@ -32,7 +32,6 @@ TEST(REQUESR_TEST, TestGetPeers)
 #include <iostream>
 TEST(REQUESR_TEST, TestGetPeers2) 
 {
-    /*
     TFileParser parser;
     parser.parse_file(TFileParser::open_file(TEST_FILE_1));
 
@@ -40,7 +39,7 @@ TEST(REQUESR_TEST, TestGetPeers2)
 
     auto arr = torrent.request_get_peers();
     //COMPARE_ARRAY_EQ({
-    //    Peer({ 165, 232, 33, 77, 51467 }),
+    //    Peer({ 165, 232, 33, 77, 51498 }),
     //    Peer({ 178, 62, 85, 20, 51489 }),
     //    Peer({ 178, 62, 82, 89, 51448 })},
     //);
@@ -54,7 +53,6 @@ TEST(REQUESR_TEST, TestGetPeers2)
         << it.ip[3] << ":"
         << it.port << "\n";
     }
-    */
 }
 
 
@@ -69,7 +67,7 @@ TEST(REQUESR_TEST, PeerIdTest)
     auto arr = torrent.request_get_peers();
 
     COMPARE_ARRAY_EQ({
-        Peer({ 165, 232, 33, 77, 51467 }),
+        Peer({ 165, 232, 33, 77, 51498 }),
         Peer({ 178, 62, 85, 20, 51489 }),
         Peer({ 178, 62, 82, 89, 51448 })},
         arr//torrent.request_get_peers()

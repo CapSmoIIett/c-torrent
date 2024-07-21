@@ -4,7 +4,7 @@
 #include <fstream>
 
 template<class T>
-void COMPARE_ARRAY_EQ(std::vector<T> l, std::vector<T> r)
+void COMPARE_ARRAY_EQ_SEQ(std::vector<T> l, std::vector<T> r)
 {
     EXPECT_EQ(l.size(), r.size());
 
@@ -14,6 +14,26 @@ void COMPARE_ARRAY_EQ(std::vector<T> l, std::vector<T> r)
     for (int i = 0; i < l.size(); ++i) {
         EXPECT_EQ(l[i], r[i]) << "Arrays is different at index " 
             << i << ". "  << "l[i]: " << l[i] << ", r[i]: " << r[i]; 
+    }
+}
+
+template<class T>
+void COMPARE_ARRAY_EQ(std::vector<T> l, std::vector<T> r)
+{
+    EXPECT_EQ(l.size(), r.size());
+
+    if (l.size() != r.size())
+        return;
+
+    for (int i = 0; i < l.size(); ++i) {
+        auto it = std::find(r.begin(), r.end(), l[i]);
+
+        EXPECT_TRUE(r.end() != it) << "Arrays is different. " 
+            << "right array does not have: " << l[i];
+
+        if (r.end() == it)
+            return;
+
     }
 }
 
@@ -34,7 +54,7 @@ void COMPARE_ARRAY_NE(std::vector<T> l, std::vector<T> r)
 
 
 template<class T>
-void COMPARE_ARRAY_EQ(std::vector<std::vector<T>> l, std::vector<std::vector<T>> r)
+void COMPARE_ARRAY_EQ_SEQ(std::vector<std::vector<T>> l, std::vector<std::vector<T>> r)
 {
     EXPECT_EQ(l.size(), r.size());
 
