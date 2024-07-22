@@ -251,6 +251,31 @@ std::string msock::Socket::GetLastError()
     return answer;
 }
 
+bool msock::Socket::operator==(const Socket& sock)
+{
+    return this->_socket == sock._socket;
+}
+
+#if defined(OS_WINDOWS)
+    bool msock::operator==(Socket left, SOCKET right)
+#else
+    bool msock::operator==(Socket left, int right)
+#endif
+    {
+        return left == right;
+    }
+
+#if defined(OS_WINDOWS)
+    bool msock::operator==(SOCKET left, Socket right)
+#else
+    bool msock::operator==(int left, Socket right)
+#endif
+    {
+        return left == right;
+    }
+
+
+
 void msock::sleep(const int64_t time)
 {
    std::this_thread::sleep_for(std::chrono::milliseconds(time)); 

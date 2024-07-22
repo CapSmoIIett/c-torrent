@@ -73,6 +73,15 @@ public:
 
     std::string GetLastError();
 
+    bool operator == (const Socket&);
+#if defined(OS_WINDOWS)
+    friend bool operator==(SOCKET, Socket);
+    friend bool operator==(Socket, SOCKET);
+#else
+    friend bool operator==(int, Socket);
+    friend bool operator==(Socket, int);
+#endif
+
 
 #if defined(OS_WINDOWS)
     static const long S_ERROR = SOCKET_ERROR;
