@@ -6,6 +6,10 @@
 #include "httplib/httplib.h"
 #include "socket.h"
 
+#include <iostream>
+#include <fstream>
+#include <random>
+
 std::tuple<std::string, std::string> split_domain_and_endpoint(const std::string& tracker_url) 
 {
     auto last_forward_slash_index = tracker_url.find_last_of('/');
@@ -115,7 +119,7 @@ std::vector<Peer> BitTorrent::request_get_peers()
 
 
         addrinfo* result = nullptr;
-        addrinfo hints;
+        addrinfo hints = {0};
 
         ZeroMemory(&hints, sizeof(hints));
         hints.ai_family = AF_INET;
@@ -124,25 +128,50 @@ std::vector<Peer> BitTorrent::request_get_peers()
 
         getaddrinfo(url.c_str(), port.c_str(), &hints, &result);
 
+
+        char *hostAddress;
+        struct sockaddr_in *addr;
+        struct addrinfo *rp;
+        for (rp = result; rp != NULL; rp = rp->ai_next) {
+            addr = (struct sockaddr_in *)rp->ai_addr; 
+            printf("dstPort  = %d\n",ntohs(addr->sin_port));
+            printf("dstAddr  = %s\n",inet_ntoa((struct in_addr)addr->sin_addr));
+            hostAddress = inet_ntoa((struct in_addr)addr->sin_addr);    
+        }
+
         socket.socket(result->ai_family, result->ai_socktype, result->ai_protocol);
 
         socket.connect(*(result->ai_addr));
 
-        std::string request = std::string("GET ") + resource + query + " HTTP/1.1\r\nHost: " + minfo.announce + "\r\nConnection: close\r\n\r\n";
-                + "?info_hash="
-                + encode_info_hash(calculate_info_hash(minfo))
-                + "peer_id"
-                + "00112233445566778899" 
-                + "port" 
-                + std::to_string(port)
-                + "uploaded"
-                + "0"
-                + "downloaded"
-                + "0"
-                + "left", 
-                + minfo.info.length
-                + "compact"
-                + "1"
+        std::string request = std::string("GET") 
+            + " / "
+            + "HTTP/1.1"
+            + "\r\n"
+            + "Host: " 
+            + url
+            + "\r\n"
+            + "\r\n"
+            + "?info_hash= "
+            + encode_info_hash(calculate_info_hash(minfo))
+            + "peer_id= "
+            + "00112233445566778899" 
+            + "port= " 
+            + port
+            + "uploaded= "
+            + "0"
+            + "downloaded= "
+            + "0"
+            + "left= "
+            + minfo.info.length
+            + "compact= "
+            + "1"
+        ;
+
+        socket.send(request);
+
+        auto str = socket.recv();
+
+        std::cout << str << "\n";
         */
     }
 
@@ -215,10 +244,6 @@ std::string BitTorrent::download_piece()
     return "";
 }
 
-
-#include <iostream>
-#include <fstream>
-#include <random>
 
 void BitTorrent::download (std::string file_name)
 {

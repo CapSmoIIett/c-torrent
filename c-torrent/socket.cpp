@@ -66,7 +66,6 @@ void msock::Socket::connect(sockaddr addr)
 }
 
 
-
 void msock::Socket::send(const std::string msg)
 {
     int res = 0;

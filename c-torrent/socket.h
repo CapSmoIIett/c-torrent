@@ -45,7 +45,6 @@
 namespace msock
 {
 
-
 class Socket final 
 {
 public:
@@ -87,7 +86,6 @@ public:
 #else
     static in_addr_t inet_addr(const char *ip);
 #endif
-
 
 
 private:
