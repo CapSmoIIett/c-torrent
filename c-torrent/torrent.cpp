@@ -60,7 +60,7 @@ std::vector<Peer> decode_peers(std::string& encoded_peers)
 
 std::vector<Peer> BitTorrent::request_get_peers()
 {
-    //if (std::string::npos != minfo.announce.find("http"))
+    if (std::string::npos != minfo.announce.find("http"))
     {
         auto domain_and_endpoint = split_domain_and_endpoint(minfo.announce);
         size_t port = 6881;
@@ -110,14 +110,60 @@ std::vector<Peer> BitTorrent::request_get_peers()
     }
     if (std::string::npos != minfo.announce.find("udp"))
     {
-        /*
-        msock::Socket socket;
-
         auto colon_index = minfo.announce.find_last_of(":");
         auto url = minfo.announce.substr(0, colon_index);
         auto port = minfo.announce.substr(colon_index + 1, minfo.announce.size() - colon_index);
+        std::string scheme;
+        int res = 0;
 
+        msock::Socket socket;
 
+        addrinfo* result = nullptr;
+        addrinfo hints;
+
+        hints.ai_family = AF_INET;
+        hints.ai_socktype = SOCK_STREAM;
+        hints.ai_protocol = IPPROTO_UDP;
+
+        system("pause");
+
+        res = getaddrinfo(url.c_str(), port.c_str(), &hints, &result);
+        if (0 != res)
+        {
+            std::cout << "Error1"<< "\n";
+            std::cout << socket.GetLastError();
+        }
+
+        socket.socket(result->ai_family, result->ai_socktype, result->ai_protocol);
+        if (INVALID_SOCKET == socket)
+        {
+            std::cout << "Error2";
+        }
+
+        socket.connect(*(result->ai_addr));
+        //if (iResult == SOCKET_ERROR) 
+
+        std::vector<uint8_t> msg;
+
+        uint64_t protocol_id = 0x41727101980;
+        const uint8_t* protocol_id_bytes = reinterpret_cast<const uint8_t *>(&protocol_id);
+        msg.insert(msg.end(), protocol_id_bytes, protocol_id_bytes + sizeof(protocol_id));
+
+        uint32_t action = 0;
+        const uint8_t* action_bytes = reinterpret_cast<const uint8_t *>(&action_bytes);
+        msg.insert(msg.end(), action_bytes, action_bytes + sizeof(action));
+
+        uint32_t transaction = 0;
+        const uint8_t* transaction_bytes = reinterpret_cast<const uint8_t *>(&transaction);
+        msg.insert(msg.end(), transaction_bytes, transaction_bytes + sizeof(transaction));
+
+        socket.send(msg);
+
+        auto str = socket.recv();
+
+        std::cout << str;
+        
+        /*
         addrinfo* result = nullptr;
         addrinfo hints = {0};
 
