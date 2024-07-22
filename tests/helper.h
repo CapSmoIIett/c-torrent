@@ -2,6 +2,7 @@
 
 #include <gtest/gtest.h>  
 #include <fstream>
+#include <algorithm>
 
 template<class T>
 void COMPARE_ARRAY_EQ_SEQ(std::vector<T> l, std::vector<T> r)
