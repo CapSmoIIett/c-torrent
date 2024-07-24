@@ -2,6 +2,8 @@ cmake_minimum_required (VERSION 3.8)
 
 project(gtests)
 
+find_package(OpenSSL REQUIRED)
+
 include(FetchContent)
 FetchContent_Declare(
   googletest
@@ -29,6 +31,7 @@ add_executable (tests
 target_link_libraries(
   tests
   GTest::gtest_main
+  OpenSSL::SSL
 )
 
 include(GoogleTest)

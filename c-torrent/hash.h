@@ -43,7 +43,7 @@ inline std::string calculate_info_hash(MetaInfo minfo)
         Bencoder::encode("pieces") + std::to_string(minfo.info._pieces.size()) + ":" + minfo.info._pieces +
         "e";
 
-    SHA1 checksum;
+    sha_headonly::SHA1 checksum;
     checksum.update(str);
 
     return checksum.final();

@@ -11,6 +11,7 @@
 
 #define TEST_FILE_1 "Armageddon.torrent"
 #define TEST_FILE_2 "sample.torrent"
+#define TEST_FILE_UBUNTU "ubuntu-24.04-desktop-amd64.iso.torrent"
 
 TEST(REQUESR_TEST, TestGetPeers) 
 {
@@ -33,7 +34,7 @@ TEST(REQUESR_TEST, TestGetPeers)
 TEST(REQUESR_TEST, TestGetPeers2) 
 {
     TFileParser parser;
-    parser.parse_file(TFileParser::open_file(TEST_FILE_1));
+    parser.parse_file(TFileParser::open_file(TEST_FILE_UBUNTU));
 
     BitTorrent torrent(get_meta_info(parser));
 
