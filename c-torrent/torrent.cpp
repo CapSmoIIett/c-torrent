@@ -1,10 +1,12 @@
 
 #include "torrent.h"
-#include "hash.h" 
 #include "../c-torrent/bencoder.h"
 
+#define CPPHTTPLIB_OPENSSL_SUPPORT
 #include "httplib/httplib.h"
 #include "socket.h"
+
+#include "hash.h" 
 
 #include <iostream>
 #include <fstream>
@@ -57,7 +59,7 @@ std::vector<Peer> decode_peers(std::string& encoded_peers)
     return peers;
 }
 
-#define CPPHTTPLIB_OPENSSL_SUPPORT
+//#define CPPHTTPLIB_OPENSSL_SUPPORT
 
 std::vector<Peer> BitTorrent::request_get_peers()
 {
