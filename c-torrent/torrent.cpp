@@ -57,9 +57,17 @@ std::vector<Peer> decode_peers(std::string& encoded_peers)
     return peers;
 }
 
+#define CPPHTTPLIB_OPENSSL_SUPPORT
 
 std::vector<Peer> BitTorrent::request_get_peers()
 {
+
+        #ifdef CPPHTTPLIB_OPENSSL_SUPPORT
+            std::cout << "SSL\n";
+        #else
+            std::cout << "NO SSL\n";
+        #endif
+
     if (std::string::npos != minfo.announce.find("http"))
     {
         auto domain_and_endpoint = split_domain_and_endpoint(minfo.announce);
@@ -79,10 +87,17 @@ std::vector<Peer> BitTorrent::request_get_peers()
 
         httplib::Headers headers{};
 
+
         //httplib::Client cli(minfo.announce);
         //auto res = cli.Get("", headers);
+        
+        //std::cout << std::get<0>(domain_and_endpoint) << "\n";
+        //std::cout << minfo.announce << "\n";
+        std::cout << std::get<0>(domain_and_endpoint) << "\n";
+        std::cout << std::get<1>(domain_and_endpoint) << "\n";
 
         httplib::Client cli(std::get<0>(domain_and_endpoint));
+
         auto res = cli.Get(
             std::get<1>(domain_and_endpoint) + "?info_hash=" + 
                 encode_info_hash(calculate_info_hash(minfo)),
@@ -110,6 +125,8 @@ std::vector<Peer> BitTorrent::request_get_peers()
     }
     if (std::string::npos != minfo.announce.find("udp"))
     {
+        // https://www.bittorrent.org/beps/bep_0015.html
+
         auto colon_index = minfo.announce.find_last_of(":");
         auto url = minfo.announce.substr(0, colon_index);
         auto port = minfo.announce.substr(colon_index + 1, minfo.announce.size() - colon_index);
@@ -121,19 +138,36 @@ std::vector<Peer> BitTorrent::request_get_peers()
         addrinfo* result = nullptr;
         addrinfo hints;
 
-        hints.ai_family = AF_INET;
+
+        url += "/" ;
+
+        std::cout << minfo.announce << "\n";
+        std::cout << port << "\n";
+
+        memset(&hints, 0, sizeof(hints));
+        hints.ai_family = AF_UNSPEC; //AF_INET;
         hints.ai_socktype = SOCK_STREAM;
         hints.ai_protocol = IPPROTO_UDP;
 
         system("pause");
 
-        res = getaddrinfo(url.c_str(), port.c_str(), &hints, &result);
+        res = getaddrinfo(minfo.announce.c_str(), NULL, &hints, &result);
         if (0 != res)
         {
-            std::cout << "Error1"<< "\n";
+            std::cout << "Error1: "<< res <<   "\n";
             std::cout << socket.GetLastError();
         }
 
+        int i = 0;
+        struct addrinfo *ptr = NULL;
+        for(ptr=result; ptr != NULL ;ptr=ptr->ai_next)
+        {
+            printf("getaddrinfo response %d\n", i++);
+            printf("\tFlags: 0x%x\n", ptr->ai_flags);
+            printf("\tFamily: ");
+        }
+
+        /*
         socket.socket(result->ai_family, result->ai_socktype, result->ai_protocol);
         if (INVALID_SOCKET == socket)
         {
@@ -142,6 +176,9 @@ std::vector<Peer> BitTorrent::request_get_peers()
 
         socket.connect(*(result->ai_addr));
         //if (iResult == SOCKET_ERROR) 
+        */
+
+
 
         std::vector<uint8_t> msg;
 
@@ -156,6 +193,8 @@ std::vector<Peer> BitTorrent::request_get_peers()
         uint32_t transaction = 0;
         const uint8_t* transaction_bytes = reinterpret_cast<const uint8_t *>(&transaction);
         msg.insert(msg.end(), transaction_bytes, transaction_bytes + sizeof(transaction));
+
+
 
         socket.send(msg);
 
