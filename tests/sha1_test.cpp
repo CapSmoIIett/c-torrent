@@ -5,7 +5,7 @@
 
 TEST(SHA1_TESTS, sha1_Test) 
 {
-    SHA1 checksum;
+    sha_headonly::SHA1 checksum;
 
     checksum.update("abc");
     EXPECT_EQ("a9993e364706816aba3e25717850c26c9cd0d89d", checksum.final());

@@ -408,7 +408,7 @@ void BitTorrent::download (std::string file_name)
         if (!second_half.empty())
             first_half.insert(first_half.end(), second_half.begin(), second_half.end());
 
-        SHA1 hash;
+        sha_headonly::SHA1 hash;
         hash.update(std::string(reinterpret_cast<const char *>(first_half.data())));
         auto h  = hash.final();
 

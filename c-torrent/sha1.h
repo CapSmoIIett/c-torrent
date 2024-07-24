@@ -35,6 +35,8 @@
 #include <sstream>
 #include <string>
 
+namespace sha_headonly
+{
 
 class SHA1
 {
@@ -333,4 +335,6 @@ inline std::string SHA1::from_file(const std::string &filename)
     SHA1 checksum;
     checksum.update(stream);
     return checksum.final();
+}
+
 }
