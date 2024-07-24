@@ -91,7 +91,6 @@ jobs:
       - name: Install dependencies on windows
         if: startsWith(matrix.config.os, 'windows')
         run: |
-          choco install ninja cmake
           ninja --version
           cmake --version
         # cmd "${{ matrix.config.environment_script }}"
@@ -209,3 +208,11 @@ jobs:
           asset_path: ./${{ matrix.config.artifact }}
           asset_name: ${{ matrix.config.artifact }}.zip
           asset_content_type: application/zip
+
+#          choco install openssl -y
+#          choco install ninja cmake
+
+#          echo Install openssl ====================================================================
+#          sudo apt-get install libssl-dev
+
+#          brew install openssl@1.1
