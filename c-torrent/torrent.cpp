@@ -63,13 +63,6 @@ std::vector<Peer> decode_peers(std::string& encoded_peers)
 
 std::vector<Peer> BitTorrent::request_get_peers()
 {
-
-        #ifdef CPPHTTPLIB_OPENSSL_SUPPORT
-            std::cout << "SSL\n";
-        #else
-            std::cout << "NO SSL\n";
-        #endif
-
     if (std::string::npos != minfo.announce.find("http"))
     {
         auto domain_and_endpoint = split_domain_and_endpoint(minfo.announce);
@@ -88,15 +81,6 @@ std::vector<Peer> BitTorrent::request_get_peers()
         };
 
         httplib::Headers headers{};
-
-
-        //httplib::Client cli(minfo.announce);
-        //auto res = cli.Get("", headers);
-        
-        //std::cout << std::get<0>(domain_and_endpoint) << "\n";
-        //std::cout << minfo.announce << "\n";
-        std::cout << std::get<0>(domain_and_endpoint) << "\n";
-        std::cout << std::get<1>(domain_and_endpoint) << "\n";
 
         httplib::Client cli(std::get<0>(domain_and_endpoint));
 
@@ -142,9 +126,6 @@ std::vector<Peer> BitTorrent::request_get_peers()
 
 
         url += "/" ;
-
-        std::cout << minfo.announce << "\n";
-        std::cout << port << "\n";
 
         memset(&hints, 0, sizeof(hints));
         hints.ai_family = AF_UNSPEC; //AF_INET;
@@ -377,7 +358,7 @@ void BitTorrent::download (std::string file_name)
 
     for (int i = 0; i < pieces.size() ; ++i)
     {
-        msock::sleep(100);
+        msock::sleep(500);
 
 
         auto size1 = calculate_size();
@@ -387,14 +368,14 @@ void BitTorrent::download (std::string file_name)
         auto msg2 = create_msg(REQUEST, create_payload_request(i, piece_length / 2, size2));
 
         sock.send(msg1);
-        msock::sleep(100);
+        msock::sleep(500);
         auto first_half = sock.recv();
 
 
-        msock::sleep(100);
+        msock::sleep(500);
 
         sock.send(msg2);
-        msock::sleep(100);
+        msock::sleep(500);
         auto second_half = sock.recv();
 
         std::cout << "size1: " << first_half.size() << "  " << get_msg_size(first_half) << "\n";
