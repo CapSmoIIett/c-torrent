@@ -2,7 +2,7 @@ cmake_minimum_required (VERSION 3.8)
 
 project(gtests)
 
-find_package(OpenSSL REQUIRED)
+find_package(OpenSSL COMPONENTS Crypto SSL REQUIRED)
 
 include(FetchContent)
 FetchContent_Declare(
@@ -32,6 +32,7 @@ target_link_libraries(
   tests
   GTest::gtest_main
   OpenSSL::SSL
+  OpenSSL::Crypto
 )
 
 include(GoogleTest)
