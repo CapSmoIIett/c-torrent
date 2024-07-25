@@ -356,6 +356,7 @@ void BitTorrent::download (std::string file_name)
         return file_length;
     };
 
+    int retry = 0;
     for (int i = 0; i < pieces.size() ; ++i)
     {
         msock::sleep(500);
@@ -397,14 +398,15 @@ void BitTorrent::download (std::string file_name)
         std::cout << "piece: " << h << "\n";
 
 
-        /*
-        for(int i = 0; i < 5 && pieces[i] != h; ++i)
+        if (retry < 5 && pieces[i] != h)
         {
             std::cout << "well shit" << "\n";
-            i--;
+            --i;
+            ++retry;
             continue;
         }
-        */
+
+        retry = 0;
 
         file.write(first_half.data(), size1 + size2);
     }
