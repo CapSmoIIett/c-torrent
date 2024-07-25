@@ -358,7 +358,7 @@ void BitTorrent::download (std::string file_name)
 
     for (int i = 0; i < pieces.size() ; ++i)
     {
-        msock::sleep(100);
+        msock::sleep(500);
 
 
         auto size1 = calculate_size();
@@ -368,14 +368,14 @@ void BitTorrent::download (std::string file_name)
         auto msg2 = create_msg(REQUEST, create_payload_request(i, piece_length / 2, size2));
 
         sock.send(msg1);
-        msock::sleep(100);
+        msock::sleep(500);
         auto first_half = sock.recv();
 
 
-        msock::sleep(100);
+        msock::sleep(500);
 
         sock.send(msg2);
-        msock::sleep(100);
+        msock::sleep(500);
         auto second_half = sock.recv();
 
         std::cout << "size1: " << first_half.size() << "  " << get_msg_size(first_half) << "\n";
