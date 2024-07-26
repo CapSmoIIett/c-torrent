@@ -11,6 +11,7 @@
 #include <iostream>
 #include <fstream>
 #include <random>
+#include <stack>
 
 std::tuple<std::string, std::string> split_domain_and_endpoint(const std::string& tracker_url) 
 {
@@ -317,6 +318,16 @@ void BitTorrent::download (std::string file_name)
 {
     auto arr = request_get_peers();
 
+    // запись в рандомном порядке
+    // рандомные пиры
+    
+    // один peer - один фрагмент
+    // 5 попыток скачать, если не получилось то на след кусок
+
+    //
+
+    // один peer, последовательно
+
     srand(time(0));
     int peernum = rand() % (arr.size() - 1);
     std::cout << peernum << "\n";
@@ -345,16 +356,27 @@ void BitTorrent::download (std::string file_name)
     // file.open (file_name);
     std::ofstream file(file_name, std::ios::binary);
 
-    auto calculate_size = [&file_length,
-                piece_length = piece_length](){
+
+    std::stack<int> piece_lengths;
+    auto calculate_size = [&file_length, &piece_lengths, piece_length = piece_length]()
+    {   
         if (file_length > piece_length / 2)
         {
             file_length -= piece_length / 2;
+            piece_lengths.push(piece_length / 2);
             return piece_length / 2;
         }
         
+        piece_lengths.push(file_length);
         return file_length;
     };
+
+    auto undo_calculate_size= [&file_length, &piece_lengths]()
+    {
+        file_length += piece_lengths.top();
+        piece_lengths.pop();
+    };
+
 
     int retry = 0;
     for (int i = 0; i < pieces.size() ; ++i)
@@ -379,9 +401,18 @@ void BitTorrent::download (std::string file_name)
         msock::sleep(500);
         auto second_half = sock.recv();
 
-        std::cout << "size1: " << first_half.size() << "  " << get_msg_size(first_half) << "\n";
+        std::cout << "msg1: "; 
+        for (auto c : msg1) std::cout << c;
+        std::cout << "\n";
+
+        std::cout << "msg2: "; 
+        for (auto c : msg2) std::cout << c;
+        std::cout << "\n";
+        
+
+        std::cout << "size1: " << size1 << " " << first_half.size() << "  " << get_msg_size(first_half) << "\n";
         if (!second_half.empty())
-            std::cout << "size2: " << second_half.size() << "  " << get_msg_size(second_half) << "\n";
+            std::cout << "size2: " << size2 << " " << second_half.size() << "  " << get_msg_size(second_half) << "\n";
 
         first_half = get_msg_piece(first_half);
         if (!second_half.empty())
@@ -402,6 +433,8 @@ void BitTorrent::download (std::string file_name)
         {
             std::cout << "well shit" << "\n";
             --i;
+            undo_calculate_size();;
+            undo_calculate_size();;
             ++retry;
             continue;
         }
