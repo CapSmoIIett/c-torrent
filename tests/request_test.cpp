@@ -30,7 +30,6 @@ TEST(REQUESR_TEST, TestGetPeers)
 }
 
 
-#include <iostream>
 TEST(REQUESR_TEST, TestGetPeers2) 
 {
     TFileParser parser;
