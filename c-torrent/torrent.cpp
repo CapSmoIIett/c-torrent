@@ -113,6 +113,7 @@ std::vector<Peer> BitTorrent::request_get_peers()
     if (std::string::npos != minfo.announce.find("udp"))
     {
         // https://www.bittorrent.org/beps/bep_0015.html
+        // https://www.bittorrent.org/beps/bep_0005.html
 
         auto colon_index = minfo.announce.find_last_of(":");
         auto url = minfo.announce.substr(0, colon_index);
