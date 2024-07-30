@@ -1,6 +1,7 @@
 
 #include <gtest/gtest.h>  
 
+#include <iostream>
 
 #include "helper.h"
 
@@ -29,7 +30,6 @@ TEST(REQUESR_TEST, TestGetPeers)
 
 }
 
-
 TEST(REQUESR_TEST, TestGetPeersUbuntu) 
 {
     TFileParser parser;
@@ -42,7 +42,21 @@ TEST(REQUESR_TEST, TestGetPeersUbuntu)
     );
 }
 
+TEST(REQUESR_TEST, TestGetPeersUdp) 
+{
+    TFileParser parser;
+    parser.parse_file(TFileParser::open_file(TEST_FILE_1));
 
+    BitTorrent torrent(get_meta_info(parser));
+
+    auto peers = torrent.request_get_peers();
+
+    for (auto peer : peers)
+    {
+        std::cout << peer.ip[0] << "." << peer.ip[1] << "." 
+            << peer.ip[2] << "." << peer.ip[3] << ":" << peer.port << "\n";
+    }
+}
 
 TEST(REQUESR_TEST, PeerIdTest) 
 {
