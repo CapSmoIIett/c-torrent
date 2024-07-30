@@ -30,7 +30,7 @@ TEST(REQUESR_TEST, TestGetPeers)
 }
 
 
-TEST(REQUESR_TEST, TestGetPeers2) 
+TEST(REQUESR_TEST, TestGetPeersUbuntu) 
 {
     TFileParser parser;
     parser.parse_file(TFileParser::open_file(TEST_FILE_UBUNTU));
@@ -41,6 +41,7 @@ TEST(REQUESR_TEST, TestGetPeers2)
         torrent.request_get_peers()
     );
 }
+
 
 
 TEST(REQUESR_TEST, PeerIdTest) 
