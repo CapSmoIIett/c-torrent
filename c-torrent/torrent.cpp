@@ -314,6 +314,8 @@ std::string BitTorrent::download_piece()
 }
 
 
+#include <bitset>
+#include <iostream>
 void BitTorrent::download (std::string file_name)
 {
     auto arr = request_get_peers();
@@ -378,6 +380,16 @@ void BitTorrent::download (std::string file_name)
     };
 
 
+    std::vector<std::vector<uint8_t>> msg_s=
+    {
+       {(uint8_t)0x00, (uint8_t)0x00, (uint8_t)0x00, (uint8_t)0x0d, (uint8_t)0x06, (uint8_t)0x00, (uint8_t)0x00, (uint8_t)0x00, (uint8_t)0x00, (uint8_t)0x00, (uint8_t)0x00, (uint8_t)0x00, (uint8_t)0x00, (uint8_t)0x00, (uint8_t)0x00, (uint8_t)0x40, (uint8_t)0x00},
+       {(uint8_t)0x00, (uint8_t)0x00, (uint8_t)0x00, (uint8_t)0x0d, (uint8_t)0x06, (uint8_t)0x00, (uint8_t)0x00, (uint8_t)0x00, (uint8_t)0x00, (uint8_t)0x00, (uint8_t)0x00, (uint8_t)0x40, (uint8_t)0x00, (uint8_t)0x00, (uint8_t)0x00, (uint8_t)0x40, (uint8_t)0x00},
+       {(uint8_t)0x00, (uint8_t)0x00, (uint8_t)0x00, (uint8_t)0x0d, (uint8_t)0x06, (uint8_t)0x00, (uint8_t)0x00, (uint8_t)0x00, (uint8_t)0x01, (uint8_t)0x00, (uint8_t)0x00, (uint8_t)0x00, (uint8_t)0x00, (uint8_t)0x00, (uint8_t)0x00, (uint8_t)0x40, (uint8_t)0x00},
+       {(uint8_t)0x00, (uint8_t)0x00, (uint8_t)0x00, (uint8_t)0x0d, (uint8_t)0x06, (uint8_t)0x00, (uint8_t)0x00, (uint8_t)0x00, (uint8_t)0x01, (uint8_t)0x00, (uint8_t)0x00, (uint8_t)0x40, (uint8_t)0x00, (uint8_t)0x00, (uint8_t)0x00, (uint8_t)0x40, (uint8_t)0x00},
+       {(uint8_t)0x00, (uint8_t)0x00, (uint8_t)0x00, (uint8_t)0x0d, (uint8_t)0x06, (uint8_t)0x00, (uint8_t)0x00, (uint8_t)0x00, (uint8_t)0x02, (uint8_t)0x00, (uint8_t)0x00, (uint8_t)0x00, (uint8_t)0x00, (uint8_t)0x00, (uint8_t)0x00, (uint8_t)0x40, (uint8_t)0x00},
+       {(uint8_t)0x00, (uint8_t)0x00, (uint8_t)0x00, (uint8_t)0x0d, (uint8_t)0x06, (uint8_t)0x00, (uint8_t)0x00, (uint8_t)0x00, (uint8_t)0x02, (uint8_t)0x00, (uint8_t)0x00, (uint8_t)0x40, (uint8_t)0x00, (uint8_t)0x00, (uint8_t)0x00, (uint8_t)0x27, (uint8_t)0x9f}
+    };
+
     int retry = 0;
     for (int i = 0; i < pieces.size() ; ++i)
     {
@@ -386,8 +398,10 @@ void BitTorrent::download (std::string file_name)
 
         auto size1 = calculate_size();
         auto msg1 = create_msg(REQUEST, create_payload_request(i, 0, size1));
+        //auto msg1 = msg_s[i * 2];
 
         auto size2 = calculate_size();
+        //auto msg2 = msg_s[i * 2 + 1];
         auto msg2 = create_msg(REQUEST, create_payload_request(i, piece_length / 2, size2));
 
         sock.send(msg1);
@@ -414,12 +428,16 @@ void BitTorrent::download (std::string file_name)
         if (!second_half.empty())
             std::cout << "size2: " << size2 << " " << second_half.size() << "  " << get_msg_size(second_half) << "\n";
 
+        std::cout << "msg1: " << std::hex  << first_half.data() << "\n";
+        std::cout << "msg2: " << std::hex  << second_half.data() << "\n";
+
         first_half = get_msg_piece(first_half);
         if (!second_half.empty())
             second_half = get_msg_piece(second_half);
 
         if (!second_half.empty())
             first_half.insert(first_half.end(), second_half.begin(), second_half.end());
+
 
         sha_headonly::SHA1 hash;
         hash.update(std::string(reinterpret_cast<const char *>(first_half.data())));
