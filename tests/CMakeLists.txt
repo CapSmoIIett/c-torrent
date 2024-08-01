@@ -2,7 +2,17 @@ cmake_minimum_required (VERSION 3.8)
 
 project(gtests)
 
-find_package(OpenSSL COMPONENTS Crypto SSL REQUIRED)
+
+find_package(OpenSSL COMPONENTS Crypto SSL QUIET)
+
+if (TARGET OpenSSL::SSL AND TARGET OpenSSL::Crypto)
+	set(USING_OPENSSL ${OPENSSL_FOUND})
+	if (${OPENSSL_FOUND})
+		add_compile_definitions(CPPHTTPLIB_OPENSSL_SUPPORT)
+	endif()
+else()
+	set(USING_OPENSSL FALSE)
+endif()
 
 include(FetchContent)
 FetchContent_Declare(
@@ -31,9 +41,17 @@ add_executable (tests
 target_link_libraries(
   tests
   GTest::gtest_main
+  #OpenSSL::SSL
+  #OpenSSL::Crypto
+)
+
+if (USING_OPENSSL)
+target_link_libraries(
+  tests
   OpenSSL::SSL
   OpenSSL::Crypto
 )
+endif()
 
 include(GoogleTest)
 gtest_discover_tests(tests)
