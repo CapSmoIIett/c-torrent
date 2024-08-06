@@ -41,17 +41,19 @@ const std::string test_str =
 
 TEST(WRITER_TEST, Write) 
 {
-    std::srand (unsigned(std::time(0)));
+    //std::srand (unsigned(std::time(0)));
 
     // test fiew times
     for (int i = 0; i < 5; ++i)
     {
         AsyncWriter file(TEST_FILE_WRITE);
 
-        std::vector<int> nums = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
+        std::vector<int> nums = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
 
-        auto rng = std::default_random_engine {};
-        std::shuffle(nums.begin(), nums.end(), rng);
+        //auto rng = std::default_random_engine {};
+        std::random_device rd;
+        std::mt19937 g(rd());
+        std::shuffle(nums.begin(), nums.end(), g);
 
         for (auto n : nums)
         {
