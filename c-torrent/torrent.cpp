@@ -1,6 +1,6 @@
 
 #include "torrent.h"
-#include "../c-torrent/bencoder.h"
+#include "bencoder.h"
 
 //#define CPPHTTPLIB_OPENSSL_SUPPORT
 #include "httplib/httplib.h"
