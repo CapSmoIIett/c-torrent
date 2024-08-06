@@ -11,16 +11,16 @@
 
 const std::vector<std::string> test_vec =
 {
-    "The path of the righteous man is beset on all sides by"
-    " the iniquities of the selfish and the tyranny of evil"
-    " men. Blessed is He who in the name of charity and goo"
-    "d will shepherds the weak through the valley of darkne"
-    "ss, for He is truly his brother's keeper and the finde"
-    "r of lost children. [begins pacing about the room] And"
-    " I will strike down upon thee with great vengeance and" 
-    " furious anger those who attempt to poison and destroy"
-    " My brothers. And you will know My name is the Lord..."
-    " [pulls out his gun and aims at Brett] ...when I lay  "
+    "The path of the righteous man is beset on all sides by",
+    " the iniquities of the selfish and the tyranny of evil",
+    " men. Blessed is He who in the name of charity and goo",
+    "d will shepherds the weak through the valley of darkne",
+    "ss, for He is truly his brother's keeper and the finde",
+    "r of lost children. [begins pacing about the room] And",
+    " I will strike down upon thee with great vengeance and" ,
+    " furious anger those who attempt to poison and destroy",
+    " My brothers. And you will know My name is the Lord...",
+    " [pulls out his gun and aims at Brett] ...when I lay  ",
     "My vengeance upon thee."
 };
 
