@@ -14,6 +14,8 @@ AsyncWriter::~AsyncWriter()
 
 void AsyncWriter::write(const std::string& str, size_t pos, size_t size)
 {
+    const std::lock_guard<std::mutex> lock(mtx);
+
     file.seekp(0, std::ios_base::end);
     size_t len = file.tellp();
 
