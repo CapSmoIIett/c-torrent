@@ -1,6 +1,8 @@
 
 #include "torrent.h"
-#include "../c-torrent/bencoder.h"
+#include "bencoder.h"
+
+#include "async_writer.h"
 
 //#define CPPHTTPLIB_OPENSSL_SUPPORT
 #include "httplib/httplib.h"
@@ -356,7 +358,8 @@ void BitTorrent::download (std::string file_name)
 
     // std::ofstream file;
     // file.open (file_name);
-    std::ofstream file(file_name, std::ios::binary);
+    //std::ofstream file(file_name, std::ios::binary);
+    AsyncWriter file(file_name);
 
 
     std::stack<int> piece_lengths;
@@ -459,9 +462,7 @@ void BitTorrent::download (std::string file_name)
 
         retry = 0;
 
-        file.write(first_half.data(), size1 + size2);
+        file.write(first_half.data(), piece_length * i, size1 + size2);
     }
-
-    file.close();
 
 }

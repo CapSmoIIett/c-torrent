@@ -30,13 +30,15 @@ add_executable (tests
 	file_parser_test.cpp
 	sha1_test.cpp
 	request_test.cpp
+	writer_test.cpp
 	
 	../c-torrent/bencoder.cpp
 	../c-torrent/file_parser.cpp
 	../c-torrent/sha1.cpp
 	../c-torrent/socket.cpp
 	../c-torrent/peer.cpp
-	../c-torrent/torrent.cpp)
+	../c-torrent/torrent.cpp
+	../c-torrent/async_writer.cpp)
 
 target_link_libraries(
   tests

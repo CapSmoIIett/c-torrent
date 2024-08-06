@@ -133,5 +133,34 @@ inline void COMPARE_FILES_EQ(const std::string& name_left, const std::string& na
     }
 
     EXPECT_EQ(it_left == end, it_right == end);
+}
+
+inline void COMPARE_FILE_STR_EQ(const std::string& file_name, const std::string& str)
+{
+    std::ifstream file(file_name, std::ios::binary);
+
+    if (!file.is_open())
+        EXPECT_TRUE(file.is_open());
+
+    std::istreambuf_iterator<char> it_file(file);
+    std::istreambuf_iterator<char> end_file;
+    auto it_str = str.begin();
+    auto end_str = str.end();
+
+    size_t symbol = 0;
+    while(it_file != end_file && it_str != end_str) 
+    {
+        if(*it_file != *it_str) 
+        {
+            EXPECT_EQ(*it_file, *it_str) 
+                << "Characters are different. File: " << *it_file << " String: " << *it_str << " i: " << symbol;
+            return;
+        }
+
+        ++symbol;
+        ++it_file;
+        ++it_str;
+    }
+
 
 }
