@@ -106,6 +106,10 @@ std::vector<Peer> BitTorrent::request_get_peers()
         
         auto it = std::find(str.begin(), str.end(), "peers");
 
+        // https://wiki.theory.org/BitTorrentSpecification#Tracker_HTTP.2FHTTPS_Protocol
+
+        // тут добавить получение interval-ов между запросами
+
         if (str.end() == it)
             return {};
 
