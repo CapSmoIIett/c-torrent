@@ -128,7 +128,7 @@ bool Peer::download_piece(AsyncWriter& file, MetaInfo minfo, int piece_num)
     int amount_pieces = file_length / piece_length;
     
     // normal piece size
-    size_t piece_size = piece_num != amount_pieces - 1 ? piece_length : file_length % piece_length; 
+    size_t piece_size = piece_num != amount_pieces ? piece_length : file_length % piece_length; 
 
     // we download the piece in two halves
     size_t first_half_size = piece_length / 2;
@@ -136,7 +136,7 @@ bool Peer::download_piece(AsyncWriter& file, MetaInfo minfo, int piece_num)
 
     std::string piece;
 
-    const int timeout = 200;
+    int timeout = 100;
 
     int attempt = 0;
     const int max_attempts = 3;
@@ -190,6 +190,8 @@ bool Peer::download_piece(AsyncWriter& file, MetaInfo minfo, int piece_num)
 
         std::cout << "hash: " << piece_hash << "\n";
         std::cout << "piece: " << hash << "\n";
+
+        timeout *= 2;
 
     } while (piece_hash != hash && max_attempts > attempt++);
 
