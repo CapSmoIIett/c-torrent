@@ -14,6 +14,8 @@
 #include <fstream>
 #include <random>
 #include <stack>
+#include <thread>
+#include <future>
 
 std::tuple<std::string, std::string> split_domain_and_endpoint(const std::string& tracker_url) 
 {
@@ -254,149 +256,45 @@ std::vector<Peer> BitTorrent::request_get_peers()
 #include <iostream>
 void BitTorrent::download (std::string file_name)
 {
-    auto arr = request_get_peers();
+    system("pause");
+    auto peers = request_get_peers();
 
-    // запись в рандомном порядке
-    // рандомные пиры
-    
-    // один peer - один фрагмент
-    // 5 попыток скачать, если не получилось то на след кусок
+    if (peers.empty())
+        return;
 
-    //
+    auto& peer = peers.begin();
 
-    // один peer, последовательно
+    peer->connect();
+    if (peer->request_get_peer_id(minfo).empty())
+    {
+        //some problems
+        std::cout << "some problems";
+        return;
+    }
+    peer->send_interested();
 
-    srand(time(0));
-    int peernum = rand() % (arr.size() - 1);
-    std::cout << peernum << "\n";
-    auto& peer = arr[peernum];
-
-    peer.connect();
-    auto& sock = peer.sock;
-
-    peer.request_get_peer_id(minfo);
-
-    //auto res = sock.recv();
-
-    auto msg = create_msg(INTERESTED);
-    sock.send(msg);
-
-    auto res = sock.recv();
-
-    auto pieces = get_pieces(minfo.info._pieces);
-
-    size_t piece_length = std::stoi(minfo.info._piece_length);
-    size_t file_length = std::stoi(minfo.info.length);
-
-    std::cout << "size: " << minfo.info.length << "\n";
-
-    // std::ofstream file;
-    // file.open (file_name);
-    //std::ofstream file(file_name, std::ios::binary);
     AsyncWriter file(file_name);
 
+    auto pieces = get_pieces(minfo.info._pieces);
+    for (int i = 0; i < pieces.size() && peer != peers.end(); ++i)
+    {
+        std::cout << *peer << "\n";
+        auto future = std::async(&Peer::download_piece, peer, std::ref(file), minfo, i);
+        //auto future = std::async(peer->download_piece, file, minfo, i);
 
-    std::stack<int> piece_lengths;
-    auto calculate_size = [&file_length, &piece_lengths, piece_length = piece_length]()
-    {   
-        if (file_length > piece_length / 2)
+        if (!future.get() && peers.end() != (++peer))
         {
-            file_length -= piece_length / 2;
-            piece_lengths.push(piece_length / 2);
-            return piece_length / 2;
+            std::cout << *peer << "\n";
+            //system("pause");
+            peer->connect();
+            if (peer->request_get_peer_id(minfo).empty())
+            {
+                //some problems
+                std::cout << "some problems";
+                return;
+            }
+            peer->send_interested();
         }
-        
-        piece_lengths.push(file_length);
-        return file_length;
-    };
-
-    auto undo_calculate_size= [&file_length, &piece_lengths]()
-    {
-        file_length += piece_lengths.top();
-        piece_lengths.pop();
-    };
-
-
-    std::vector<std::vector<uint8_t>> msg_s=
-    {
-       {(uint8_t)0x00, (uint8_t)0x00, (uint8_t)0x00, (uint8_t)0x0d, (uint8_t)0x06, (uint8_t)0x00, (uint8_t)0x00, (uint8_t)0x00, (uint8_t)0x00, (uint8_t)0x00, (uint8_t)0x00, (uint8_t)0x00, (uint8_t)0x00, (uint8_t)0x00, (uint8_t)0x00, (uint8_t)0x40, (uint8_t)0x00},
-       {(uint8_t)0x00, (uint8_t)0x00, (uint8_t)0x00, (uint8_t)0x0d, (uint8_t)0x06, (uint8_t)0x00, (uint8_t)0x00, (uint8_t)0x00, (uint8_t)0x00, (uint8_t)0x00, (uint8_t)0x00, (uint8_t)0x40, (uint8_t)0x00, (uint8_t)0x00, (uint8_t)0x00, (uint8_t)0x40, (uint8_t)0x00},
-       {(uint8_t)0x00, (uint8_t)0x00, (uint8_t)0x00, (uint8_t)0x0d, (uint8_t)0x06, (uint8_t)0x00, (uint8_t)0x00, (uint8_t)0x00, (uint8_t)0x01, (uint8_t)0x00, (uint8_t)0x00, (uint8_t)0x00, (uint8_t)0x00, (uint8_t)0x00, (uint8_t)0x00, (uint8_t)0x40, (uint8_t)0x00},
-       {(uint8_t)0x00, (uint8_t)0x00, (uint8_t)0x00, (uint8_t)0x0d, (uint8_t)0x06, (uint8_t)0x00, (uint8_t)0x00, (uint8_t)0x00, (uint8_t)0x01, (uint8_t)0x00, (uint8_t)0x00, (uint8_t)0x40, (uint8_t)0x00, (uint8_t)0x00, (uint8_t)0x00, (uint8_t)0x40, (uint8_t)0x00},
-       {(uint8_t)0x00, (uint8_t)0x00, (uint8_t)0x00, (uint8_t)0x0d, (uint8_t)0x06, (uint8_t)0x00, (uint8_t)0x00, (uint8_t)0x00, (uint8_t)0x02, (uint8_t)0x00, (uint8_t)0x00, (uint8_t)0x00, (uint8_t)0x00, (uint8_t)0x00, (uint8_t)0x00, (uint8_t)0x40, (uint8_t)0x00},
-       {(uint8_t)0x00, (uint8_t)0x00, (uint8_t)0x00, (uint8_t)0x0d, (uint8_t)0x06, (uint8_t)0x00, (uint8_t)0x00, (uint8_t)0x00, (uint8_t)0x02, (uint8_t)0x00, (uint8_t)0x00, (uint8_t)0x40, (uint8_t)0x00, (uint8_t)0x00, (uint8_t)0x00, (uint8_t)0x27, (uint8_t)0x9f}
-    };
-
-    int retry = 0;
-    for (int i = 0; i < pieces.size() ; ++i)
-    {
-        msock::sleep(500);
-
-
-        auto size1 = calculate_size();
-        auto msg1 = create_msg(REQUEST, create_payload_request(i, 0, size1));
-        //auto msg1 = msg_s[i * 2];
-
-        auto size2 = calculate_size();
-        //auto msg2 = msg_s[i * 2 + 1];
-        auto msg2 = create_msg(REQUEST, create_payload_request(i, piece_length / 2, size2));
-
-        sock.send(msg1);
-        msock::sleep(500);
-        auto first_half = sock.recv();
-
-
-        msock::sleep(500);
-
-        sock.send(msg2);
-        msock::sleep(500);
-        auto second_half = sock.recv();
-
-        std::cout << "msg1: "; 
-        for (auto c : msg1) std::cout << c;
-        std::cout << "\n";
-
-        std::cout << "msg2: "; 
-        for (auto c : msg2) std::cout << c;
-        std::cout << "\n";
-        
-
-        std::cout << "size1: " << size1 << " " << first_half.size() << "  " << get_msg_size(first_half) << "\n";
-        if (!second_half.empty())
-            std::cout << "size2: " << size2 << " " << second_half.size() << "  " << get_msg_size(second_half) << "\n";
-
-        std::cout << "msg1: " << std::hex  << first_half.data() << "\n";
-        std::cout << "msg2: " << std::hex  << second_half.data() << "\n";
-
-        first_half = get_msg_piece(first_half);
-        if (!second_half.empty())
-            second_half = get_msg_piece(second_half);
-
-        if (!second_half.empty())
-            first_half.insert(first_half.end(), second_half.begin(), second_half.end());
-
-
-        sha_headonly::SHA1 hash;
-        hash.update(std::string(reinterpret_cast<const char *>(first_half.data())));
-        auto h  = hash.final();
-
-        std::cout << "hash: " << pieces[i] << "\n";
-        std::cout << "piece: " << h << "\n";
-
-
-        if (retry < 5 && pieces[i] != h)
-        {
-            std::cout << "well shit" << "\n";
-            --i;
-            undo_calculate_size();;
-            undo_calculate_size();;
-            ++retry;
-            continue;
-        }
-
-        retry = 0;
-
-        file.write(first_half.data(), piece_length * i, size1 + size2);
     }
 
 }
