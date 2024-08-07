@@ -262,7 +262,7 @@ void BitTorrent::download (std::string file_name)
     if (peers.empty())
         return;
 
-    auto& peer = peers.begin();
+    auto peer = peers.begin();
 
     peer->connect();
     if (peer->request_get_peer_id(minfo).empty())
