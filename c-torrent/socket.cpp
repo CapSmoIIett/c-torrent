@@ -65,6 +65,15 @@ void msock::Socket::connect(sockaddr addr)
     }
 }
 
+bool msock::Socket::connected()
+{
+#if defined(OS_WINDOWS)
+    return _socket == INVALID_SOCKET;
+#else
+    return _socket == -1;
+#endif
+}
+
 
 void msock::Socket::send(const std::string msg)
 {
@@ -124,11 +133,13 @@ std::string msock::Socket::recv()
     {
         std::cout << "closed: " << GetLastError() << "\n";
         // closed
+        return std::string();
     }
     else if (res < 0)
     {
         std::cout << "error: " << GetLastError() << "\n";
         // error
+        return std::string();
     }
 
     std::string response(buffer, res);

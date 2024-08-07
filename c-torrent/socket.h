@@ -58,6 +58,8 @@ public:
 
     void connect(sockaddr_in);
     void connect(sockaddr);
+    
+    bool connected();
 
     void send(const std::string);
     void send(const std::vector<uint8_t>);
