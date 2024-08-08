@@ -1,5 +1,6 @@
 #pragma once
 
+#include <string>
 #include <fstream>
 #include <chrono>
 #include <ctime>
@@ -9,10 +10,10 @@
 // # define LOG_FILE "filename.txt"
 
 /*
-[time] [file:row] [type] |_  [function] : [parameters] [msg]
-[time] [file:row] [type] | |_ [function] : [parameters] [msg]
-[time] [file:row] [type] | |-- [parameters] [msg]
-[time] [file:row] [type] | |-- [W,I,E,] [msg]
+|_  [time] [file:row] [function] : [parameters] [msg]
+| |_ [time] [file:row][function] : [parameters] [msg]
+| | | [time] [file:row] [parameters] [msg]
+| |-- [time] [file:row] [W,I,E,] [msg]
 
 
 уровни дебага:
@@ -46,14 +47,6 @@ public:
 
     int deep_counter = 0;
 
-    Logger& operator<< (std::string str)
-    {
-        auto logger = Logger::instance();
-        logger->file << str;
-
-        return *this;
-    };
-
     template <class T>
     Logger& operator<< (T t)
     {
@@ -77,50 +70,95 @@ private:
 
 };
 
+template <class T>
+void write_stack_depth(T& t, int deep)
+{
+    for (int i = 0; i < deep; ++i)
+        t << "| "; 
+}
+
+class FunctionLog final
+{
+public:
+    FunctionLog(const char* name, const char* file, int line) :
+        function_name(name), file_name(file), row(std::to_string(line))
+    {
+        auto logger = Logger::instance();
+
+        write_stack_depth(*logger, logger->deep_counter);
+
+        // enter in function
+        (*logger) << "|_ [" << file << ":" << line << "] ["<< function_name << "]" << "\n"; 
+
+        ++logger->deep_counter;
+    }
+
+    ~FunctionLog()
+    {
+        auto logger = Logger::instance();
+        --logger->deep_counter;
+
+        write_stack_depth(*logger, logger->deep_counter);
+
+        // exit from function
+        (*logger) << "|- [" << file_name << ":" << std::string(row.size(), '_') << "] ";
+        (*logger) << "[" << function_name << "]" << "\n"; 
+
+    }
+
+private:
+    std::string function_name;
+    std::string file_name;
+    std::string row;
+};
 
 class Log final
 {
 public:
-    Log()
+    Log(char type, const char* file, int line)
     {
         auto logger = Logger::instance();
-        ++logger->deep_counter;
+        write_stack_depth(*logger, logger->deep_counter);
+        (*logger) << "| [" << file << ":" << line << "] [" << type << "] : "; 
     }
+
+    Log(const char* file, int line)
+    {
+        auto logger = Logger::instance();
+        write_stack_depth(*logger, logger->deep_counter);
+        (*logger) << "| [" << file << ":" << line << "] [" << TYPE_INFO << "] : "; 
+    }
+
     ~Log()
     {
         auto logger = Logger::instance();
-        --logger->deep_counter;
+        (*logger) << "\n";
     }
 
-
-    Logger& operator()(char type, const char* file, int line)
+    template <class T>
+    Logger& operator<< (T t)
     {
         auto logger = Logger::instance();
-
-        (*logger) << "[" << file << ":" << line << "] [" << type << "] : "; 
-
-        return *logger;
-    }
-
-    Logger& operator()(const char* file, int line)
-    {
-        auto logger = Logger::instance();
-
-        (*logger) << "[" << file << ":" << line << "] [" << TYPE_INFO << "] : "; 
+        (*logger) << t;
 
         return *logger;
-    }
-
-private:
-
-    char type;
-
+    } 
 };
 
+Log make_log(char type, const char* file, int line)
+{
+    return Log(type, file, line);
+}
 
-#define LOG Log __log;
+Log make_log(const char* file, int line)
+{
+    return Log(file, line);
+}
 
-#define log(char) __log(char, __FILE__, __LINE__)
-#define log() __log(__FILE__, __LINE__)
+
+#define LOG FunctionLog __function_log__(__FUNCTION__, __FILE__, __LINE__);
+
+#define log(char) make_log(char, __FILE__, __LINE__)
+#define log() make_log(__FILE__, __LINE__)
 
 
