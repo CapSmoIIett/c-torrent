@@ -1,6 +1,9 @@
 #pragma once
 
 #include <fstream>
+#include <chrono>
+#include <ctime>
+
 
 // to set name for logs:
 // # define LOG_FILE "filename.txt"
@@ -51,6 +54,15 @@ public:
         return *this;
     };
 
+    template <class T>
+    Logger& operator<< (T t)
+    {
+        auto logger = Logger::instance();
+        logger->file << t;
+
+        return *this;
+    } 
+
 private:
     Logger()
     {
@@ -81,10 +93,20 @@ public:
     }
 
 
-    Logger& operator()(char type = TYPE_INFO)
+    Logger& operator()(char type, const char* file, int line)
     {
         auto logger = Logger::instance();
 
+        (*logger) << "[" << file << ":" << line << "] [" << type << "] : "; 
+
+        return *logger;
+    }
+
+    Logger& operator()(const char* file, int line)
+    {
+        auto logger = Logger::instance();
+
+        (*logger) << "[" << file << ":" << line << "] [" << TYPE_INFO << "] : "; 
 
         return *logger;
     }
@@ -94,5 +116,11 @@ private:
     char type;
 
 };
+
+
+#define LOG Log __log;
+
+#define log(char) __log(char, __FILE__, __LINE__)
+#define log() __log(__FILE__, __LINE__)
 
 
