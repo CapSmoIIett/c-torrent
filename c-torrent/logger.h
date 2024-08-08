@@ -68,6 +68,10 @@ private:
         file.open(DEFAULT_LOG_FILE, std::ios::app);
     #endif
     }
+    ~Logger()
+    {
+        file.close();
+    }
 
     std::ofstream file;
 
@@ -140,14 +144,6 @@ public:
         (*logger) << "| [" << file << ":" << line << "] [" << type << "] : "; 
     }
 
-    Log(const char* file, int line)
-    {
-        auto logger = Logger::instance();
-        (*logger) << "[" << get_time() << "] ";
-        write_stack_depth(*logger, logger->deep_counter);
-        (*logger) << "| [" << file << ":" << line << "] [" << TYPE_INFO << "] : "; 
-    }
-
     ~Log()
     {
         auto logger = Logger::instance();
@@ -171,7 +167,7 @@ Log make_log(char type, const char* file, int line)
 
 Log make_log(const char* file, int line)
 {
-    return Log(file, line);
+    return Log(TYPE_INFO, file, line);
 }
 
 
