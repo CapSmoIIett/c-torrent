@@ -5,15 +5,18 @@
 #include <chrono>
 #include <ctime>
 
+#include <time.h>
+
 
 // to set name for logs:
 // # define LOG_FILE "filename.txt"
 
 /*
-|_  [time] [file:row] [function] : [parameters] [msg]
-| |_ [time] [file:row][function] : [parameters] [msg]
-| | | [time] [file:row] [parameters] [msg]
-| |-- [time] [file:row] [W,I,E,] [msg]
+[time] |_  [file:row] [function] : [parameters] [msg]
+[time] | |_ [file:row][function] : [parameters] [msg]
+[time] | | | [file:row] [parameters] [msg]
+[time] | | | [file:row] [W,I,E,] [msg]
+[time] | |_| [file:row][function] : [parameters] [msg]
 
 
 уровни дебага:
@@ -77,6 +80,18 @@ void write_stack_depth(T& t, int deep)
         t << "| "; 
 }
 
+std::string get_time()
+{
+    char buffer[26];
+    std::tm tm;
+    time_t time = std::time(nullptr);
+
+    gmtime_s(&tm, &time);
+    strftime(buffer, 26, "%Y-%m-%d %H:%M:%S", &tm);
+
+    return std::string(buffer);
+}
+
 class FunctionLog final
 {
 public:
@@ -85,6 +100,7 @@ public:
     {
         auto logger = Logger::instance();
 
+        (*logger) << "[" << get_time() << "]";
         write_stack_depth(*logger, logger->deep_counter);
 
         // enter in function
@@ -98,10 +114,11 @@ public:
         auto logger = Logger::instance();
         --logger->deep_counter;
 
+        (*logger) << "[" << get_time() << "]";
         write_stack_depth(*logger, logger->deep_counter);
 
         // exit from function
-        (*logger) << "|- [" << file_name << ":" << std::string(row.size(), '_') << "] ";
+        (*logger) << "|_| [" << file_name << ":" << std::string(row.size(), '_') << "] ";
         (*logger) << "[" << function_name << "]" << "\n"; 
 
     }
@@ -118,6 +135,7 @@ public:
     Log(char type, const char* file, int line)
     {
         auto logger = Logger::instance();
+        (*logger) << "[" << get_time() << "] ";
         write_stack_depth(*logger, logger->deep_counter);
         (*logger) << "| [" << file << ":" << line << "] [" << type << "] : "; 
     }
@@ -125,6 +143,7 @@ public:
     Log(const char* file, int line)
     {
         auto logger = Logger::instance();
+        (*logger) << "[" << get_time() << "] ";
         write_stack_depth(*logger, logger->deep_counter);
         (*logger) << "| [" << file << ":" << line << "] [" << TYPE_INFO << "] : "; 
     }
