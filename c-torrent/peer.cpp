@@ -66,7 +66,7 @@ std::string get_info_string(std::string info_hash)
     }
     std::string info_string = std::string(reinterpret_cast<char *>(bytes.data()), bytes.size() * sizeof(uint8_t));
 
-    log() << info_string;
+    log(I) << info_string;
 
     return info_string;
 }
@@ -87,7 +87,7 @@ std::string Peer::request_get_peer_id(MetaInfo minfo)
     sock.send(handshake_message);
 
     auto response = sock.recv();
-    log() << "response: " << response;
+    log(I) << "response: " << response;
 
     if (response.empty())
         return std::string();
@@ -106,7 +106,7 @@ std::string Peer::request_get_peer_id(MetaInfo minfo)
            << static_cast<int>(c);
     }
 
-    log() << ss.str();
+    log(I) << ss.str();
 
     return ss.str();
 
@@ -157,8 +157,8 @@ bool Peer::download_piece(AsyncWriter& file, MetaInfo minfo, int piece_num)
         // before each attempt clear result string
         piece = std::string();
 
-        log() << "first_half_size: " << first_half_size;
-        log() << "second_half_size: " << second_half_size;
+        log(I) << "first_half_size: " << first_half_size;
+        log(I) << "second_half_size: " << second_half_size;
 
         if (piece_size > first_half_size)
         {
@@ -178,8 +178,8 @@ bool Peer::download_piece(AsyncWriter& file, MetaInfo minfo, int piece_num)
             msock::sleep(timeout);
             auto second_half = sock.recv();
 
-            log() << "first msg size: " << first_half.size() << " msg: " << first_half;
-            log() << "second msg size: " << second_half.size() << "msg: " << second_half;
+            log(I) << "first msg size: " << first_half.size() << " msg: " << first_half;
+            log(I) << "second msg size: " << second_half.size() << "msg: " << second_half;
 
             first_half = get_msg_piece(first_half);
             if (!second_half.empty())
@@ -209,8 +209,8 @@ bool Peer::download_piece(AsyncWriter& file, MetaInfo minfo, int piece_num)
         std::cout << "hash: " << piece_hash << "\n";
         std::cout << "piece: " << hash << "\n";
 
-        log() << "hash: " << piece_hash << "\n";
-        log() << "piece: " << hash << "\n";
+        log(I) << "hash: " << piece_hash << "\n";
+        log(I) << "piece: " << hash << "\n";
 
         timeout *= 2;
 
