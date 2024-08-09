@@ -85,31 +85,38 @@ private:
 
 };
 
-template <class T>
-void write_stack_depth(T& t, int deep)
+class _Logs 
 {
-    for (int i = 0; i < deep; ++i)
-        t << "| "; 
-}
+protected:
+    template <class T>
+    void write_stack_depth(T& t, int deep)
+    {
+        for (int i = 0; i < deep; ++i)
+            t << "| "; 
+    }
 
-std::string get_time()
-{
-    char buffer[26];
-    std::tm tm;
-    time_t time = std::time(nullptr);
+    std::string get_time()
+    {
+        char buffer[26];
+        std::tm tm;
+        time_t time = std::time(nullptr);
 
-#if defined(OS_WINDOWS)
-    gmtime_s(&tm, &time);
-#else
-    gmtime_r(&time, &tm);
-#endif
+    #if defined(OS_WINDOWS)
+        gmtime_s(&tm, &time);
+    #else
+        gmtime_r(&time, &tm);
+    #endif
 
-    strftime(buffer, 26, "%Y-%m-%d %H:%M:%S", &tm);
+        strftime(buffer, 26, "%Y-%m-%d %H:%M:%S", &tm);
 
-    return std::string(buffer);
-}
+        return std::string(buffer);
+    }
 
-class FunctionLog final
+};
+
+
+
+class FunctionLog final : _Logs
 {
 public:
     FunctionLog(const char* name, const char* file, int line) :
@@ -117,7 +124,7 @@ public:
     {
         auto logger = Logger::instance();
 
-        (*logger) << "[" << get_time() << "]";
+        (*logger) << "[" << get_time() << "] ";
         write_stack_depth(*logger, logger->deep_counter);
 
         // enter in function
@@ -131,7 +138,7 @@ public:
         auto logger = Logger::instance();
         --logger->deep_counter;
 
-        (*logger) << "[" << get_time() << "]";
+        (*logger) << "[" << get_time() << "] ";
         write_stack_depth(*logger, logger->deep_counter);
 
         // exit from function
@@ -146,7 +153,7 @@ private:
     std::string row;
 };
 
-class Log final
+class Log final : _Logs
 {
 public:
     Log(char type, const char* file, int line)
@@ -173,20 +180,9 @@ public:
     } 
 };
 
-Log make_log(char type, const char* file, int line)
-{
-    return Log(type, file, line);
-}
-
-Log make_log(const char* file, int line)
-{
-    return Log(TYPE_INFO, file, line);
-}
-
-
 #define LOG FunctionLog __function_log__(__FUNCTION__, __FILE__, __LINE__);
 
-#define log(char) make_log(char, __FILE__, __LINE__)
+#define log(char) Log(char, __FILE__, __LINE__)
 //#define log() make_log(__FILE__, __LINE__)
 
 
