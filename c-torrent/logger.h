@@ -7,6 +7,14 @@
 
 #include <time.h>
 
+#if defined(_WIN32) || defined(_WIN64)
+	#define OS_WINDOWS
+#elif defined(__unix__) || defined(__unix) || (defined(__APPLE__) && defined(__MACH__))
+	#define OS_POSIX
+#else
+	#error unsupported platform
+#endif
+
 
 // to set name for logs:
 // # define LOG_FILE "filename.txt"
@@ -90,7 +98,12 @@ std::string get_time()
     std::tm tm;
     time_t time = std::time(nullptr);
 
+#if defined(OS_WINDOWS)
     gmtime_s(&tm, &time);
+#else
+    gmtime_r(&time, &tm);
+#endif
+
     strftime(buffer, 26, "%Y-%m-%d %H:%M:%S", &tm);
 
     return std::string(buffer);
