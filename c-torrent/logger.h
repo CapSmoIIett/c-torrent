@@ -182,7 +182,7 @@ public:
 
 #define LOG FunctionLog __function_log__(__FUNCTION__, __FILE__, __LINE__);
 
-#define __log(char) Log(char, __FILE__, __LINE__)
+#define __log(char) Log{char, __FILE__, __LINE__}
 //#define log() make_log(__FILE__, __LINE__)
 
 
