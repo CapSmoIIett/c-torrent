@@ -62,13 +62,7 @@ public:
     int deep_counter = 0;
 
     template <class T>
-    Logger& operator<< (T t)
-    {
-        auto logger = Logger::instance();
-        logger->file << t;
-
-        return *this;
-    } 
+    friend Logger& operator<< (Logger& logger, T t);
 
 private:
     Logger()
@@ -87,6 +81,14 @@ private:
     std::ofstream file;
 
 };
+
+template <class T>
+Logger& operator<< (Logger& logger, T t)
+{
+    logger.file << t;
+
+    return logger;
+} 
 
 class _Logs 
 {
@@ -181,7 +183,6 @@ public:
 
         return *logger;
     } 
-
 };
 
 inline Log create_log(char type, const char* file, const int line)
