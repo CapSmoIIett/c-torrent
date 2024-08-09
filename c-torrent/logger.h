@@ -46,6 +46,9 @@ logger() - конструктор - вход в метод - параметры 
 #define E TYPE_ERROR  
 #define I TYPE_INFO    
 
+namespace mlog
+{
+
 class Logger final
 {
 public:
@@ -178,11 +181,19 @@ public:
 
         return *logger;
     } 
+
 };
 
-#define LOG FunctionLog __function_log__(__FUNCTION__, __FILE__, __LINE__);
+inline Log create_log(char type, const char* file, const int line)
+{
+    return Log(type, file, line);
+}
 
-#define __log(char) Log{char, __FILE__, __LINE__}
+}
+
+#define LOG mlog::FunctionLog __function_log__(__FUNCTION__, __FILE__, __LINE__);
+
+#define __log(ch) mlog::create_log(ch,  __FILE__, __LINE__)
 //#define log() make_log(__FILE__, __LINE__)
 
 
