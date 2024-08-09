@@ -2,6 +2,7 @@
 #include "peer.h"
 #include "hash.h"
 #include "request_helper.h"
+#include "logger.h"
 
 #include <sstream>
 
@@ -19,6 +20,7 @@ Peer::Peer(std::vector<int> ip_port)
 
 void Peer::connect()
 {
+    LOG
     sock.socket(AF_INET, SOCK_STREAM, 0);
 
     auto peer_ip = std::to_string(ip[0]) + "." + std::to_string(ip[1]) + "." +
@@ -45,6 +47,7 @@ bool Peer::connected()
 
 void Peer::send_interested()
 {
+    LOG
     auto msg = create_msg(INTERESTED);
     sock.send(msg);
 
@@ -53,6 +56,7 @@ void Peer::send_interested()
 
 std::string get_info_string(std::string info_hash)
 {
+    LOG
     std::vector<uint8_t> bytes;
     for (unsigned int i = 0; i < info_hash.length(); i += 2)
     {
@@ -61,11 +65,15 @@ std::string get_info_string(std::string info_hash)
         bytes.push_back(byte);
     }
     std::string info_string = std::string(reinterpret_cast<char *>(bytes.data()), bytes.size() * sizeof(uint8_t));
+
+    log() << info_string;
+
     return info_string;
 }
 
 std::string Peer::request_get_peer_id(MetaInfo minfo)
 {
+    LOG
     using namespace std::string_literals;
     // Create message
     std::string handshake_message = std::string("\x13") +                // length of the protocol string
@@ -79,6 +87,7 @@ std::string Peer::request_get_peer_id(MetaInfo minfo)
     sock.send(handshake_message);
 
     auto response = sock.recv();
+    log() << "response: " << response;
 
     if (response.empty())
         return std::string();
@@ -96,6 +105,8 @@ std::string Peer::request_get_peer_id(MetaInfo minfo)
         ss << std::hex << std::setw(2) << std::setfill('0')
            << static_cast<int>(c);
     }
+
+    log() << ss.str();
 
     return ss.str();
 
@@ -119,6 +130,7 @@ std::ostream& operator<<( std::ostream& out, const Peer& peer)
 #include <iostream>
 bool Peer::download_piece(AsyncWriter& file, MetaInfo minfo, int piece_num)
 {
+    LOG
     auto piece_hash = get_pieces(minfo.info._pieces)[piece_num];
     std::string hash;   // hash of result string
     size_t piece_length = std::stoi(minfo.info._piece_length);
@@ -145,6 +157,9 @@ bool Peer::download_piece(AsyncWriter& file, MetaInfo minfo, int piece_num)
         // before each attempt clear result string
         piece = std::string();
 
+        log() << "first_half_size: " << first_half_size;
+        log() << "second_half_size: " << second_half_size;
+
         if (piece_size > first_half_size)
         {
             auto msg1 = create_msg(REQUEST, create_payload_request(piece_num, 0, first_half_size));
@@ -162,6 +177,9 @@ bool Peer::download_piece(AsyncWriter& file, MetaInfo minfo, int piece_num)
             sock.send(msg2);
             msock::sleep(timeout);
             auto second_half = sock.recv();
+
+            log() << "first msg size: " << first_half.size() << " msg: " << first_half;
+            log() << "second msg size: " << second_half.size() << "msg: " << second_half;
 
             first_half = get_msg_piece(first_half);
             if (!second_half.empty())
@@ -191,6 +209,9 @@ bool Peer::download_piece(AsyncWriter& file, MetaInfo minfo, int piece_num)
         std::cout << "hash: " << piece_hash << "\n";
         std::cout << "piece: " << hash << "\n";
 
+        log() << "hash: " << piece_hash << "\n";
+        log() << "piece: " << hash << "\n";
+
         timeout *= 2;
 
     } while (piece_hash != hash && max_attempts > attempt++);
@@ -198,6 +219,7 @@ bool Peer::download_piece(AsyncWriter& file, MetaInfo minfo, int piece_num)
 
     if (piece_hash != hash)
     {
+        log(W) << "piece_hash != hash";
         disconect();
         return false;
     }
