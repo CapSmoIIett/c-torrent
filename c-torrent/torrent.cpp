@@ -1,6 +1,7 @@
 
 #include "torrent.h"
 #include "bencoder.h"
+#include "logger.h"
 
 #include "async_writer.h"
 
@@ -19,6 +20,7 @@
 
 std::tuple<std::string, std::string> split_domain_and_endpoint(const std::string& tracker_url) 
 {
+    LOG
     auto last_forward_slash_index = tracker_url.find_last_of('/');
     auto first_forward_slash_index = tracker_url.find_first_of('/');
 
@@ -27,6 +29,9 @@ std::tuple<std::string, std::string> split_domain_and_endpoint(const std::string
 
     auto domain = tracker_url.substr(0, last_forward_slash_index);
     auto endpoint = tracker_url.substr(last_forward_slash_index, tracker_url.size() - last_forward_slash_index);
+
+    _log(I) << "domain: " << domain;
+    _log(I) << "endpoint: " << endpoint;
 
     return std::make_tuple(domain, endpoint);
 }
@@ -68,8 +73,10 @@ std::vector<Peer> decode_peers(std::string& encoded_peers)
 
 std::vector<Peer> BitTorrent::request_get_peers()
 {
+    LOG
     if (std::string::npos != minfo.announce.find("http"))
     {
+        _log(I) << "http";
         auto domain_and_endpoint = split_domain_and_endpoint(minfo.announce);
         size_t port = 6881;
         size_t uploaded = 0;
@@ -120,6 +127,7 @@ std::vector<Peer> BitTorrent::request_get_peers()
     }
     if (std::string::npos != minfo.announce.find("udp"))
     {
+        _log(I) << "udp";
         // https://www.bittorrent.org/beps/bep_0015.html
 
         auto colon_index = minfo.announce.find_last_of(":");
@@ -260,7 +268,7 @@ std::vector<Peer> BitTorrent::request_get_peers()
 #include <iostream>
 void BitTorrent::download (std::string file_name)
 {
-    system("pause");
+    LOG
     auto peers = request_get_peers();
 
     if (peers.empty())
@@ -272,6 +280,7 @@ void BitTorrent::download (std::string file_name)
     if (peer->request_get_peer_id(minfo).empty())
     {
         //some problems
+        _log(W) << "Requested peer id failed";
         std::cout << "some problems";
         return;
     }
@@ -289,11 +298,11 @@ void BitTorrent::download (std::string file_name)
         if (!future.get() && peers.end() != (++peer))
         {
             std::cout << *peer << "\n";
-            //system("pause");
             peer->connect();
             if (peer->request_get_peer_id(minfo).empty())
             {
                 //some problems
+                _log(W) << "Requested peer id failed";
                 std::cout << "some problems";
                 return;
             }

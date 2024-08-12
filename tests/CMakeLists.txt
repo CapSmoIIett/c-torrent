@@ -5,12 +5,17 @@ project(gtests)
 
 find_package(OpenSSL COMPONENTS Crypto SSL QUIET)
 
+
 if (TARGET OpenSSL::SSL AND TARGET OpenSSL::Crypto)
 	set(USING_OPENSSL ${OPENSSL_FOUND})
 	if (${OPENSSL_FOUND})
+		message("Use open ssl")
 		add_compile_definitions(CPPHTTPLIB_OPENSSL_SUPPORT)
+	else()
+		message("Don't use open ssl")
 	endif()
 else()
+	message("Don't use open ssl")
 	set(USING_OPENSSL FALSE)
 endif()
 
@@ -38,6 +43,7 @@ add_executable (tests
 	../c-torrent/socket.cpp
 	../c-torrent/peer.cpp
 	../c-torrent/torrent.cpp
+	../c-torrent/logger.cpp
 	../c-torrent/async_writer.cpp)
 
 target_link_libraries(
