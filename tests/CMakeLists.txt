@@ -38,6 +38,7 @@ add_executable (tests
 	../c-torrent/socket.cpp
 	../c-torrent/peer.cpp
 	../c-torrent/torrent.cpp
+	../c-torrent/logger.cpp
 	../c-torrent/async_writer.cpp)
 
 target_link_libraries(
