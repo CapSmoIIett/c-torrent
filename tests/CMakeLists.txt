@@ -5,12 +5,17 @@ project(gtests)
 
 find_package(OpenSSL COMPONENTS Crypto SSL QUIET)
 
+
 if (TARGET OpenSSL::SSL AND TARGET OpenSSL::Crypto)
 	set(USING_OPENSSL ${OPENSSL_FOUND})
 	if (${OPENSSL_FOUND})
+		message("Use open ssl")
 		add_compile_definitions(CPPHTTPLIB_OPENSSL_SUPPORT)
+	else()
+		message("Don't use open ssl")
 	endif()
 else()
+	message("Don't use open ssl")
 	set(USING_OPENSSL FALSE)
 endif()
 
