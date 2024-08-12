@@ -22,7 +22,7 @@ jobs:
         - {
             name: "Windows Latest MSVC",
             os: windows-2019,
-            artifact: "windows_msvc.7z",
+            artifact: "windows_msvc",
             build_type: "Release",
             cc: "cl",
             cxx: "cl",
@@ -45,7 +45,7 @@ jobs:
         - {
             name: "Ubuntu_Latest_GCC",
             os: ubuntu-latest,
-            artifact: "ubuntu_gcc.7z",
+            artifact: "ubuntu_gcc",
             build_type: "Release",
             cc: "gcc",
             cxx: "g++",
@@ -56,7 +56,7 @@ jobs:
         - {
             name: "Ubuntu_GCC_9",
             os: ubuntu-latest,
-            artifact: "ubuntu_gcc9.7z",
+            artifact: "ubuntu_gcc9",
             build_type: "Release",
             cc: "gcc",
             cxx: "g++",
@@ -67,7 +67,7 @@ jobs:
         - {
             name: "macOS Latest Clang",
             os: macos-latest,
-            artifact: "macos_clang.7z",
+            artifact: "macos_clang",
             build_type: "Release",
             cc: "clang",
             cxx: "clang++",
@@ -188,19 +188,19 @@ jobs:
         run: |
           ${{matrix.config.test_exe_path}}
 
-      - name: Pack
-        shell: bash
-        working-directory: instdir
-        run: |
-          ls -laR
-          ${{ matrix.config.archiver }} ../${{ matrix.config.artifact }} .
+#      - name: Pack
+#        shell: bash
+#        working-directory: instdir
+#        run: |
+#          ls -laR
+#          ${{ matrix.config.archiver }} ../${{ matrix.config.artifact }} .
       
       # upload logs
-      - name: Upload
+      - name: Upload logs
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: logs
+          name: ${{ matrix.config.artifact }}_logs
           path: log.txt
           #name: ${{ matrix.config.artifact }}
           #path: ./${{ matrix.config.artifact }}
