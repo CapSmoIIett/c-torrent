@@ -202,19 +202,7 @@ jobs:
         with:
           name: ${{ matrix.config.artifact }}_logs
           path: log.txt
-          #name: ${{ matrix.config.artifact }}
-          #path: ./${{ matrix.config.artifact }}
         
-      - name: dir
-        if: always()
-        shell: bash
-        run: |
-          find -name "log.txt"
-#          cd build
-#          cd tests 
-#          cd tests 
-#          ls
-
       - name: Upload release asset
         if: github.event_name == 'release' && (github.event.action == 'published' || github.event.action == 'created')
         uses: actions/upload-release-asset@v1
