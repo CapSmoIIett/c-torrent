@@ -165,14 +165,22 @@ bool Peer::download_piece(AsyncWriter& file, MetaInfo minfo, int piece_num)
         std::cout << msg1.data() << "\n";
         std::cout << msg2.data() << "\n";
 
+
         sock.send(msg1);
         msock::sleep(timeout);
+
+        //auto test = sock.recv();
+        //std::cout << "test type: " << get_msg_type(test) << "\n";
+        //std::cout << "test size: " << test.size() << "\n";
+
         auto first_half = sock.recv();
         std::cout << get_msg_type(first_half) << "\n";
 
         if (REJECT_REQUEST == get_msg_type(first_half))
         {
             _log(W) << "Reject";
+            std::cout << "Reject" << "\n";
+            //std::cout << first_half;
             disconect();
             return false;
         }
@@ -184,15 +192,24 @@ bool Peer::download_piece(AsyncWriter& file, MetaInfo minfo, int piece_num)
         auto second_half = sock.recv();
         std::cout << get_msg_type(second_half) << "\n";
 
+
         if (REJECT_REQUEST == get_msg_type(second_half))
         {
             _log(W) << "Reject";
+            std::cout << "Reject";
+            //std::cout << second_half;
             disconect();
             return false;
         }
 
-        _log(I) << "first msg size: " << first_half.size() << " msg: " << first_half;
-        _log(I) << "second msg size: " << second_half.size() << "msg: " << second_half;
+        std::cout << "first msg size: " << first_half.size() << "\n";
+        std::cout << "second msg size: " << second_half.size() << "\n";
+
+        std::cout << "first msg size: " << get_msg_size(first_half) << "\n";
+        std::cout << "second msg size: " << get_msg_size(second_half) << "\n";
+
+        _log(I) << "first msg size: " << first_half.size() << " msg: " << get_msg_piece(first_half);
+        _log(I) << "second msg size: " << second_half.size() << "msg: " << get_msg_piece(second_half);
 
         first_half = get_msg_piece(first_half);
         if (!second_half.empty())

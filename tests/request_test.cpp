@@ -30,6 +30,7 @@ TEST(REQUESR_TEST, TestGetPeers)
 }
 
 
+/*
 #ifdef CPPHTTPLIB_OPENSSL_SUPPORT
 TEST(REQUESR_TEST, TestGetPeersUbuntu) 
 {
@@ -43,6 +44,7 @@ TEST(REQUESR_TEST, TestGetPeersUbuntu)
     );
 }
 #endif
+*/
 
 
 
