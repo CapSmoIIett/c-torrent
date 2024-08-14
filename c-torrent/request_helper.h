@@ -8,6 +8,7 @@
 #define REQUEST     6
 #define PIECE       7
 #define CANCEL      8
+#define REJECT_REQUEST 16
 
 #define KB          1024
 

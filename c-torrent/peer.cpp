@@ -151,72 +151,79 @@ bool Peer::download_piece(AsyncWriter& file, MetaInfo minfo, int piece_num)
 
     int timeout = 100;
 
-    int attempt = 0;
-    const int max_attempts = 3;
-    do
+    // before each attempt clear result string
+    piece = std::string();
+
+    _log(I) << "first_half_size: " << first_half_size;
+    _log(I) << "second_half_size: " << second_half_size;
+
+    if (piece_size > first_half_size)
     {
-        // before each attempt clear result string
-        piece = std::string();
+        auto msg1 = create_msg(REQUEST, create_payload_request(piece_num, 0, first_half_size));
+        auto msg2 = create_msg(REQUEST, create_payload_request(piece_num, first_half_size, second_half_size));
 
-        _log(I) << "first_half_size: " << first_half_size;
-        _log(I) << "second_half_size: " << second_half_size;
+        std::cout << msg1.data() << "\n";
+        std::cout << msg2.data() << "\n";
 
-        if (piece_size > first_half_size)
+        sock.send(msg1);
+        msock::sleep(timeout);
+        auto first_half = sock.recv();
+        std::cout << get_msg_type(first_half) << "\n";
+
+        if (REJECT_REQUEST == get_msg_type(first_half))
         {
-            auto msg1 = create_msg(REQUEST, create_payload_request(piece_num, 0, first_half_size));
-            auto msg2 = create_msg(REQUEST, create_payload_request(piece_num, first_half_size, second_half_size));
-
-            std::cout << msg1.data() << "\n";
-            std::cout << msg2.data() << "\n";
-
-            sock.send(msg1);
-            msock::sleep(timeout);
-            auto first_half = sock.recv();
-
-            msock::sleep(timeout);
-
-            sock.send(msg2);
-            msock::sleep(timeout);
-            auto second_half = sock.recv();
-
-            _log(I) << "first msg size: " << first_half.size() << " msg: " << first_half;
-            _log(I) << "second msg size: " << second_half.size() << "msg: " << second_half;
-
-            first_half = get_msg_piece(first_half);
-            if (!second_half.empty())
-                second_half = get_msg_piece(second_half);
-
-            if (!second_half.empty())
-                first_half.insert(first_half.end(), second_half.begin(), second_half.end());
-
-            piece = std::move(first_half);
-        }
-        else
-        {
-            // if we don't need second half
-            auto msg = create_msg(REQUEST, create_payload_request(piece_num, 0, first_half_size));
-
-            sock.send(msg);
-            msock::sleep(timeout);
-            auto first_half = sock.recv();
-
-            piece = get_msg_piece(first_half);
+            _log(W) << "Reject";
+            disconect();
+            return false;
         }
 
-        sha_headonly::SHA1 sha;
-        sha.update(std::string(reinterpret_cast<const char *>(piece.data())));
-        hash = sha.final();
+        msock::sleep(timeout);
 
-        std::cout << "hash: " << piece_hash << "\n";
-        std::cout << "piece: " << hash << "\n";
+        sock.send(msg2);
+        msock::sleep(timeout);
+        auto second_half = sock.recv();
+        std::cout << get_msg_type(second_half) << "\n";
 
-        _log(I) << "hash: " << piece_hash << "\n";
-        _log(I) << "piece: " << hash << "\n";
+        if (REJECT_REQUEST == get_msg_type(second_half))
+        {
+            _log(W) << "Reject";
+            disconect();
+            return false;
+        }
 
-        timeout *= 2;
+        _log(I) << "first msg size: " << first_half.size() << " msg: " << first_half;
+        _log(I) << "second msg size: " << second_half.size() << "msg: " << second_half;
 
-    } while (piece_hash != hash && max_attempts > attempt++);
+        first_half = get_msg_piece(first_half);
+        if (!second_half.empty())
+            second_half = get_msg_piece(second_half);
 
+        if (!second_half.empty())
+            first_half.insert(first_half.end(), second_half.begin(), second_half.end());
+
+        piece = std::move(first_half);
+    }
+    else
+    {
+        // if we don't need second half
+        auto msg = create_msg(REQUEST, create_payload_request(piece_num, 0, first_half_size));
+
+        sock.send(msg);
+        msock::sleep(timeout);
+        auto first_half = sock.recv();
+
+        piece = get_msg_piece(first_half);
+    }
+
+    sha_headonly::SHA1 sha;
+    sha.update(std::string(reinterpret_cast<const char *>(piece.data())));
+    hash = sha.final();
+
+    std::cout << "hash: " << piece_hash << "\n";
+    std::cout << "piece: " << hash << "\n";
+
+    _log(I) << "hash: " << piece_hash << "\n";
+    _log(I) << "piece: " << hash << "\n";
 
     if (piece_hash != hash)
     {
