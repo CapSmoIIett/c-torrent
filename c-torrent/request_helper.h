@@ -65,6 +65,7 @@ inline uint32_t get_msg_piece_index(const std::string& msg)
 inline std::vector<uint8_t> get_msg_piece(const std::vector<uint8_t>& msg)
 {
     size_t header_size = 
+        4 + // size
         1 + // type
         4 + // index
         4;  // offset
