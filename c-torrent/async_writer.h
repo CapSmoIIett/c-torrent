@@ -12,6 +12,7 @@ public:
     ~AsyncWriter();
 
     void write(const std::string& str, size_t pos, size_t size = -1);
+    void write(const char* buffer, size_t pos, size_t size);
     void open();
     void close();
 
