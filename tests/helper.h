@@ -161,6 +161,31 @@ inline void COMPARE_FILE_STR_EQ(const std::string& file_name, const std::string&
         ++it_file;
         ++it_str;
     }
+}
 
+inline std::string READ_FILE(const std::string& file_name)
+{
+    std::ifstream file(file_name);
 
+    return std::string((std::istreambuf_iterator<char>(file)),
+                 std::istreambuf_iterator<char>());
+}
+
+inline std::string READ_FILE(const std::string& file_name, size_t begin, size_t len)
+{
+    try
+    {
+        std::ifstream fin(file_name);
+        fin.seekg(begin, fin.beg);
+        std::string str(len, '\0');
+
+        fin.read(&str[0], len);
+ 
+        return str;
+    }
+    catch(const std::exception& e)
+    {
+        std::cout << e.what() << '\n';
+    }
+    
 }
