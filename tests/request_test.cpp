@@ -81,6 +81,42 @@ TEST(REQUESR_TEST, PeerIdTest)
     );
 }
 
+TEST(REQUESR_TEST, DownloadPieceTest) 
+{
+    TFileParser parser;
+    const char temp_file_name[] = "__temp.txt";
+
+    parser.parse_file(TFileParser::open_file(TEST_FILE_2));
+
+    MetaInfo minfo = get_meta_info(parser);
+
+    BitTorrent torrent(minfo);
+
+    AsyncWriter file(temp_file_name);
+
+    auto peers = torrent.request_get_peers();
+    if (peers.empty())
+        return;
+
+    auto peer = peers.begin();
+    peer->connect();
+    
+    EXPECT_FALSE(peer->request_get_peer_id(minfo).empty());
+
+    peer->send_interested();
+
+    auto pieces = get_pieces(minfo.info._pieces);
+
+    peer[0].download_piece(file, minfo, 0);
+
+    auto download = READ_FILE(temp_file_name);
+    auto reference = READ_FILE("sample.txt", 0, std::stoi(minfo.info._piece_length));
+
+    EXPECT_EQ(download, reference);
+
+    remove(temp_file_name);
+}
+
 TEST(REQUESR_TEST, DownloadTest) 
 {
     TFileParser parser;
