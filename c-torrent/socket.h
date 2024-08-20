@@ -70,6 +70,9 @@ public:
     std::string recv();
     std::string read();
 
+    std::vector<uint8_t> _recv();
+    std::vector<uint8_t> _read();
+
     void closesocket();
     void close();
 

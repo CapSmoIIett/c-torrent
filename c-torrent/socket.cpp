@@ -152,6 +152,42 @@ std::string msock::Socket::read()
     return this->recv();
 }
 
+std::vector<uint8_t> msock::Socket::_recv()
+{
+    uint8_t buffer[17 * 1024];
+    int res = 0;
+
+#if defined(OS_WINDOWS)
+    res = ::recv(_socket, (char*)buffer, sizeof(buffer), 0);
+#else
+    res = ::read(_socket, (char*)buffer, sizeof(buffer));
+#endif
+
+    std::cout << "recv: " << res << "\n";
+    //std::cout <<  buffer << "\n";
+
+    if (res == 0)
+    {
+        std::cout << "closed: " << GetLastError() << "\n";
+        // closed
+        return {};
+    }
+    else if (res < 0)
+    {
+        std::cout << "error: " << GetLastError() << "\n";
+        // error
+        return {};
+    }
+
+    std::vector<uint8_t> response(buffer, buffer + res);
+
+    return response;
+}
+
+std::vector<uint8_t> msock::Socket::_read()
+{
+    return this->_recv();
+}
 
 void msock::Socket::closesocket()
 {
