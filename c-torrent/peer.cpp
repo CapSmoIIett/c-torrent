@@ -133,7 +133,7 @@ bool Peer::download_piece(AsyncWriter& file, MetaInfo minfo, int piece_num)
 {
     LOG
     auto piece_hash = get_pieces(minfo.info._pieces)[piece_num];
-    std::string hash;   // hash of result string
+    //std::string hash;   // hash of result string
     size_t piece_length = std::stoi(minfo.info._piece_length);
     size_t file_length = std::stoi(minfo.info.length);
 
@@ -147,13 +147,13 @@ bool Peer::download_piece(AsyncWriter& file, MetaInfo minfo, int piece_num)
     size_t first_half_size = piece_length / 2;
     size_t second_half_size = piece_size - first_half_size > 0 ? piece_size - first_half_size : 0;
 
-    std::string piece;
+    //std::string piece;
+    std::vector<uint8_t> piece = {};
+    size_t size = 0;
 
     int timeout = 100;
 
     // before each attempt clear result string
-    piece = std::string();
-
     _log(I) << "first_half_size: " << first_half_size;
     _log(I) << "second_half_size: " << second_half_size;
 
@@ -165,7 +165,6 @@ bool Peer::download_piece(AsyncWriter& file, MetaInfo minfo, int piece_num)
         std::cout << msg1.data() << "\n";
         std::cout << msg2.data() << "\n";
 
-
         sock.send(msg1);
         msock::sleep(timeout);
 
@@ -173,7 +172,7 @@ bool Peer::download_piece(AsyncWriter& file, MetaInfo minfo, int piece_num)
         //std::cout << "test type: " << get_msg_type(test) << "\n";
         //std::cout << "test size: " << test.size() << "\n";
 
-        auto first_half = sock.recv();
+        auto first_half = sock._recv();
         std::cout << get_msg_type(first_half) << "\n";
 
         if (REJECT_REQUEST == get_msg_type(first_half))
@@ -189,7 +188,7 @@ bool Peer::download_piece(AsyncWriter& file, MetaInfo minfo, int piece_num)
 
         sock.send(msg2);
         msock::sleep(timeout);
-        auto second_half = sock.recv();
+        auto second_half = sock._recv();
         std::cout << get_msg_type(second_half) << "\n";
 
 
@@ -208,8 +207,8 @@ bool Peer::download_piece(AsyncWriter& file, MetaInfo minfo, int piece_num)
         std::cout << "first msg size: " << get_msg_size(first_half) << "\n";
         std::cout << "second msg size: " << get_msg_size(second_half) << "\n";
 
-        _log(I) << "first msg size: " << first_half.size() << " msg: " << get_msg_piece(first_half);
-        _log(I) << "second msg size: " << second_half.size() << "msg: " << get_msg_piece(second_half);
+        _log(I) << "first msg size: " << first_half.size() << " msg: " << (char*)get_msg_piece(first_half).data();
+        _log(I) << "second msg size: " << second_half.size() << "msg: " << (char*)get_msg_piece(second_half).data();
 
         first_half = get_msg_piece(first_half);
         if (!second_half.empty())
@@ -227,29 +226,35 @@ bool Peer::download_piece(AsyncWriter& file, MetaInfo minfo, int piece_num)
 
         sock.send(msg);
         msock::sleep(timeout);
-        auto first_half = sock.recv();
+        auto first_half = sock._recv();
 
         piece = get_msg_piece(first_half);
     }
 
-    sha_headonly::SHA1 sha;
-    sha.update(std::string(reinterpret_cast<const char *>(piece.data())));
-    hash = sha.final();
+    //sha_headonly::SHA1 sha;
+    //sha.update(std::string(reinterpret_cast<const char *>(piece.data())));
+    //hash = sha.final();
+
+    sha_headonly::SHA1_HASH hash;
+    sha_headonly::Sha1Calculate(piece.data(), piece.size(), &hash);
+    auto str_hash = sha_headonly::HashToString(hash);
 
     std::cout << "hash: " << piece_hash << "\n";
-    std::cout << "piece: " << hash << "\n";
+    std::cout << "piece: " << str_hash << "\n";
 
     _log(I) << "hash: " << piece_hash << "\n";
-    _log(I) << "piece: " << hash << "\n";
+    _log(I) << "piece: " << str_hash << "\n";
 
+    /*
     if (piece_hash != hash)
     {
         _log(W) << "piece_hash != hash";
         disconect();
         return false;
     }
+    */
 
-    file.write(piece.data(), piece_length * piece_num, first_half_size + second_half_size);
+    file.write((char*)piece.data(), piece_length * piece_num, first_half_size + second_half_size);
 
     return true;
 }
