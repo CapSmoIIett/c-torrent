@@ -74,10 +74,11 @@ TEST(REQUEST_TEST, PeerIdTest)
 
     peer.connect();
 
-    std::vector<std::string> ids = {
+    static const std::vector<std::string> ids = {
     "2d524e302e302e302d5af5c2cf488815c4a2fa7f",
     "2d524e302e302e302d0df778d11e39f854451c24",
-    "2d524e302e302e302d71436ef031d3d90fc6cb18"
+    "2d524e302e302e302d71436ef031d3d90fc6cb18",
+    "2d524e302e302e302db4166a8c5ee1c01d1c6263"
     };
 
     auto peer_id = peer.request_get_peer_id(torrent.minfo);
