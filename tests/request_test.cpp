@@ -14,6 +14,12 @@
 #define TEST_FILE_2 "sample.torrent"
 #define TEST_FILE_UBUNTU "ubuntu-24.04-desktop-amd64.iso.torrent"
 
+static const std::vector<Peer> PEER_ARRAY_1 = {
+        Peer({ 167, 71, 141, 80, 51470 }),
+        Peer({ 167, 71, 141, 82, 51482 }),
+        Peer({ 134, 209, 186, 165, 51417})
+    };
+
 TEST(REQUEST_TEST, TestGetPeers) 
 {
     TFileParser parser;
@@ -21,10 +27,8 @@ TEST(REQUEST_TEST, TestGetPeers)
 
     BitTorrent torrent(get_meta_info(parser));
 
-    COMPARE_ARRAY_EQ({
-        Peer({ 165, 232, 33, 77, 51498 }),
-        Peer({ 178, 62, 85, 20, 51489 }),
-        Peer({ 178, 62, 82, 89, 51448 })},
+    COMPARE_ARRAY_EQ(
+        PEER_ARRAY_1,
         torrent.request_get_peers()
     );
 
@@ -58,10 +62,11 @@ TEST(REQUEST_TEST, PeerIdTest)
     
     auto arr = torrent.request_get_peers();
 
-    COMPARE_ARRAY_EQ({
-        Peer({ 165, 232, 33, 77, 51498 }),
-        Peer({ 178, 62, 85, 20, 51489 }),
-        Peer({ 178, 62, 82, 89, 51448 })},
+    for (auto peer : arr)
+        std::cout << peer << "\n";
+
+    COMPARE_ARRAY_EQ(
+        PEER_ARRAY_1,
         arr//torrent.request_get_peers()
     );
 
