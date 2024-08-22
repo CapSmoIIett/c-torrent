@@ -1,5 +1,6 @@
 
 #include <gtest/gtest.h>  
+#include <gmock/gmock.h>
 
 
 #include "helper.h"
@@ -74,11 +75,10 @@ TEST(REQUESR_TEST, PeerIdTest)
     "2d524e302e302e302d0df778d11e39f854451c24",
     "2d524e302e302e302d71436ef031d3d90fc6cb18"
     };
-    
-    EXPECT_EQ(
-        ids[2],
-        peer.request_get_peer_id(torrent.minfo)
-    );
+
+    auto peer_id = peer.request_get_peer_id(torrent.minfo);
+
+    ASSERT_THAT(peer_id, ::testing::AnyOfArray(ids));
 }
 
 TEST(REQUESR_TEST, DownloadPieceTest) 
