@@ -14,7 +14,7 @@
 #define TEST_FILE_2 "sample.torrent"
 #define TEST_FILE_UBUNTU "ubuntu-24.04-desktop-amd64.iso.torrent"
 
-TEST(REQUESR_TEST, TestGetPeers) 
+TEST(REQUEST_TEST, TestGetPeers) 
 {
     TFileParser parser;
     parser.parse_file(TFileParser::open_file(TEST_FILE_2));
@@ -33,7 +33,7 @@ TEST(REQUESR_TEST, TestGetPeers)
 
 /*
 #ifdef CPPHTTPLIB_OPENSSL_SUPPORT
-TEST(REQUESR_TEST, TestGetPeersUbuntu) 
+TEST(REQUEST_TEST, TestGetPeersUbuntu) 
 {
     TFileParser parser;
     parser.parse_file(TFileParser::open_file(TEST_FILE_UBUNTU));
@@ -48,8 +48,7 @@ TEST(REQUESR_TEST, TestGetPeersUbuntu)
 */
 
 
-
-TEST(REQUESR_TEST, PeerIdTest) 
+TEST(REQUEST_TEST, PeerIdTest) 
 {
     TFileParser parser;
 
@@ -81,7 +80,7 @@ TEST(REQUESR_TEST, PeerIdTest)
     ASSERT_THAT(peer_id, ::testing::AnyOfArray(ids));
 }
 
-TEST(REQUESR_TEST, DownloadPieceTest) 
+TEST(REQUEST_TEST, DownloadPieceTest) 
 {
     TFileParser parser;
     const char temp_file_name[] = "__temp.txt";
@@ -117,7 +116,7 @@ TEST(REQUESR_TEST, DownloadPieceTest)
     remove(temp_file_name);
 }
 
-TEST(REQUESR_TEST, DownloadTest) 
+TEST(REQUEST_TEST, DownloadTest) 
 {
     TFileParser parser;
 
