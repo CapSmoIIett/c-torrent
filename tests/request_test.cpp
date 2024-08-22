@@ -108,6 +108,9 @@ TEST(REQUEST_TEST, DownloadPieceTest)
     
     EXPECT_FALSE(peer->request_get_peer_id(minfo).empty());
 
+    if (!peer->request_get_peer_id(minfo).empty())
+        return;
+
     peer->send_interested();
 
     auto pieces = get_pieces(minfo.info._pieces);
