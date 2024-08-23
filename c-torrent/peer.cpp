@@ -56,7 +56,6 @@ void Peer::send_interested()
 
 std::string get_info_string(std::string info_hash)
 {
-    LOG
     std::vector<uint8_t> bytes;
     for (unsigned int i = 0; i < info_hash.length(); i += 2)
     {
@@ -65,9 +64,6 @@ std::string get_info_string(std::string info_hash)
         bytes.push_back(byte);
     }
     std::string info_string = std::string(reinterpret_cast<char *>(bytes.data()), bytes.size() * sizeof(uint8_t));
-
-    _log(I) << info_string;
-    //__log(I) << "hi";
 
     return info_string;
 }
