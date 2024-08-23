@@ -164,12 +164,9 @@ bool Peer::download_piece(AsyncWriter& file, MetaInfo minfo, int piece_num)
 
         sock.send(msg1);
         msock::sleep(timeout);
-
-        //auto test = sock.recv();
-        //std::cout << "test type: " << get_msg_type(test) << "\n";
-        //std::cout << "test size: " << test.size() << "\n";
-
         auto first_half = sock._recv();
+        auto first_recv_size = get_msg_size(first_half);
+
         std::cout << get_msg_type(first_half) << "\n";
 
         if (REJECT_REQUEST == get_msg_type(first_half))
@@ -181,13 +178,22 @@ bool Peer::download_piece(AsyncWriter& file, MetaInfo minfo, int piece_num)
             return false;
         }
 
+        while (first_half.size() < first_recv_size)
+        {
+            auto buf = sock._recv();
+            first_half.insert(first_half.end(), buf.begin(), buf.end());
+        }
+
+        first_half = get_msg_piece(first_half);
+
         msock::sleep(timeout);
 
         sock.send(msg2);
         msock::sleep(timeout);
         auto second_half = sock._recv();
-        std::cout << get_msg_type(second_half) << "\n";
+        auto second_recv_size = get_msg_size(second_half);
 
+        std::cout << get_msg_type(second_half) << "\n";
 
         if (REJECT_REQUEST == get_msg_type(second_half))
         {
@@ -196,6 +202,12 @@ bool Peer::download_piece(AsyncWriter& file, MetaInfo minfo, int piece_num)
             //std::cout << second_half;
             disconect();
             return false;
+        }
+
+        while (second_half.size() < second_recv_size)
+        {
+            auto buf = sock._recv();
+            second_half.insert(second_half.end(), buf.begin(), buf.end());
         }
 
         std::cout << "first msg size: " << first_half.size() << "\n";
@@ -207,9 +219,7 @@ bool Peer::download_piece(AsyncWriter& file, MetaInfo minfo, int piece_num)
         _log(I) << "first msg size: " << first_half.size() << " msg: " << (char*)get_msg_piece(first_half).data();
         _log(I) << "second msg size: " << second_half.size() << "msg: " << (char*)get_msg_piece(second_half).data();
 
-        first_half = get_msg_piece(first_half);
-        if (!second_half.empty())
-            second_half = get_msg_piece(second_half);
+        second_half = get_msg_piece(second_half);
 
         if (!second_half.empty())
             first_half.insert(first_half.end(), second_half.begin(), second_half.end());
