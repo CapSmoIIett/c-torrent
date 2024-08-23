@@ -8,7 +8,11 @@
 #define REQUEST     6
 #define PIECE       7
 #define CANCEL      8
+#define PORT        9
+#define HAVE_ALL    14
+#define HAVE_NONE   15
 #define REJECT_REQUEST 16
+#define EXTENDED    20
 
 #define KB          1024
 

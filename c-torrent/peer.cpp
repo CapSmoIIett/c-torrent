@@ -76,6 +76,7 @@ std::string Peer::request_get_peer_id(MetaInfo minfo)
     std::string handshake_message = std::string("\x13") +                // length of the protocol string
                                     "BitTorrent protocol"s +              // protocol string
                                     "\x00\x00\x00\x00\x00\x00\x00\x00"s + // reserved
+                                    //"\x00\x00\x00\x00\x00\x01\x00\x05"s + // allow fast protocol 
                                     get_info_string(calculate_info_hash(minfo)) +         // info hash
                                     "00112233445566778899"s;              // peer id
 
