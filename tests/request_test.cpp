@@ -83,6 +83,8 @@ TEST(REQUEST_TEST, PeerIdTest)
 
     auto peer_id = peer.request_get_peer_id(torrent.minfo);
 
+    std::cout << peer_id << "\n";
+
     ASSERT_THAT(peer_id, ::testing::AnyOfArray(ids));
 }
 
@@ -103,19 +105,24 @@ TEST(REQUEST_TEST, DownloadPieceTest)
     if (peers.empty())
         return;
 
-    auto peer = peers.begin();
+    auto peer = &peers[1];
     peer->connect();
-    
-    EXPECT_FALSE(peer->request_get_peer_id(minfo).empty());
 
-    if (!peer->request_get_peer_id(minfo).empty())
+    auto peer_id = peer->request_get_peer_id(minfo);
+
+    // read bitfield
+    //peer->sock.recv();
+
+    EXPECT_FALSE(peer_id.empty());
+
+    if (peer_id.empty())
         return;
 
     peer->send_interested();
 
     auto pieces = get_pieces(minfo.info._pieces);
 
-    peer[0].download_piece(file, minfo, 0);
+    peer->download_piece(file, minfo, 0);
 
     auto download = READ_FILE(temp_file_name);
     auto reference = READ_FILE("sample.txt", 0, std::stoi(minfo.info._piece_length));
