@@ -74,9 +74,9 @@ inline std::vector<uint8_t> get_msg_piece(const std::vector<uint8_t>& msg)
         4 + // index
         4;  // offset
 
-    if (header_size > msg.size())
+    if (header_size >= msg.size())
         // error
-        return msg;
+        return {};
 
     return std::vector<uint8_t>(msg.begin() + header_size, msg.end());
 }
@@ -89,9 +89,9 @@ inline std::string get_msg_piece(const std::string& msg)
         4 + // index
         4;  // offset
 
-    if (header_size > msg.size())
+    if (header_size >= msg.size())
         // error
-        return msg;
+        return "";
 
     return std::string(msg.begin() + header_size, msg.end());
 }
