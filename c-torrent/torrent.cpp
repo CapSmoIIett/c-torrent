@@ -276,14 +276,21 @@ void BitTorrent::download (std::string file_name)
 
     auto peer = peers.begin();
 
-    peer->connect();
-    if (peer->request_get_peer_id(minfo).empty())
+    std::string peer_id;
+    do 
     {
-        //some problems
+        peer->connect();
+        peer_id = peer->request_get_peer_id(minfo);
+
+    } while(peer_id.empty() && peers.end() != peer);
+
+    if (peers.end() == peer)
+    {
         _log(W) << "Requested peer id failed";
-        std::cout << "some problems";
+        std::cout << "Requested peer id failed";
         return;
     }
+
     peer->send_interested();
 
     AsyncWriter file(file_name);
@@ -295,18 +302,23 @@ void BitTorrent::download (std::string file_name)
         auto future = std::async(&Peer::download_piece, peer, std::ref(file), minfo, i);
         //auto future = std::async(peer->download_piece, file, minfo, i);
 
-        if (!future.get() && peers.end() != (++peer))
+        if (future.get())
+            continue;
+
+        if (peers.end() != ++peer)
         {
             std::cout << *peer << "\n";
             peer->connect();
             if (peer->request_get_peer_id(minfo).empty())
             {
+                //system("pause");
                 //some problems
                 _log(W) << "Requested peer id failed";
                 std::cout << "some problems";
                 return;
             }
             peer->send_interested();
+            --i;
         }
     }
 
