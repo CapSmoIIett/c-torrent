@@ -15,9 +15,9 @@
 #define TEST_FILE_UBUNTU "ubuntu-24.04-desktop-amd64.iso.torrent"
 
 static const std::vector<Peer> PEER_ARRAY_1 = {
-        Peer({ 167, 71, 141, 80, 51470 }),
-        Peer({ 167, 71, 141, 82, 51482 }),
-        Peer({ 134, 209, 186, 165, 51417})
+        Peer({ 161, 35, 46, 221, 51414}),
+        Peer({ 159, 65, 84, 183, 51444}),
+        Peer({ 167, 172, 57, 188, 51413})
     };
 
 TEST(REQUEST_TEST, TestGetPeers) 
@@ -78,7 +78,8 @@ TEST(REQUEST_TEST, PeerIdTest)
     "2d524e302e302e302d5af5c2cf488815c4a2fa7f",
     "2d524e302e302e302d0df778d11e39f854451c24",
     "2d524e302e302e302d71436ef031d3d90fc6cb18",
-    "2d524e302e302e302db4166a8c5ee1c01d1c6263"
+    "2d524e302e302e302db4166a8c5ee1c01d1c6263",
+    "2d524e302e302e302dc3381e92ac5122cdeb08db"
     };
 
     auto peer_id = peer.request_get_peer_id(torrent.minfo);
