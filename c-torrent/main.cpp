@@ -1,8 +1,9 @@
-#include "bencoder.h"
+#include "bencode/bencoder.h"
 #include <iostream>
 
 #include <ftxui/dom/elements.hpp>
 #include <ftxui/screen/screen.hpp>
+
 #include <iostream>
 
 int main(void) {
@@ -20,6 +21,8 @@ int main(void) {
         Dimension::Full(),       // Width
         Dimension::Fit(document) // Height
     );
+
+    //auto screen = ScreenInteractive::Fullscreen();
     Render(screen, document);
     screen.Print();
 

@@ -5,10 +5,10 @@
 
 #include "helper.h"
 
-#include "../c-torrent/metainfo.h"
-#include "../c-torrent/file_parser.h"
-#include "../c-torrent/hash.h"
-#include "../c-torrent/torrent.h"
+#include "../c-torrent/metainfo/metainfo.h"
+#include "../c-torrent/bencode/file_parser.h"
+#include "../c-torrent/hash/hash.h"
+#include "../c-torrent/torrent/torrent.h"
 
 #define TEST_FILE_1 "Armageddon.torrent"
 #define TEST_FILE_2 "sample.torrent"

@@ -1,8 +1,8 @@
 #pragma once
 
-#include "metainfo.h"
-#include "file_parser.h"
-#include "bencoder.h"
+#include "../metainfo/metainfo.h"
+#include "../bencode/file_parser.h"
+#include "../bencode/bencoder.h"
 #include "sha1.h"
 
 

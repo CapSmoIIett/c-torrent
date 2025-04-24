@@ -1,8 +1,8 @@
 
-#include "peer.h"
-#include "hash.h"
+#include "../hash/hash.h"
+#include "../logger/logger.h"
 #include "request_helper.h"
-#include "logger.h"
+#include "peer.h"
 
 #include <sstream>
 

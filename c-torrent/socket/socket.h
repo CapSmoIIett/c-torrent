@@ -105,10 +105,6 @@ public:
 private:
 #if defined(OS_WINDOWS)
     SOCKET _socket = INVALID_SOCKET;
-    WSADATA _wsaData;
-
-    // static inline unsigned int _amount;  // only for c++17
-    static unsigned int _amount;
 #else
     int _socket = -1;
 

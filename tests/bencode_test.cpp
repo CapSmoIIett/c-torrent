@@ -2,7 +2,7 @@
 #include <gtest/gtest.h>  
 
 #include "helper.h"
-#include "../c-torrent/bencoder.h"
+#include "../c-torrent/bencode/bencoder.h"
 
 TEST(BENCODE_DECODE_TEST, TestDecodeString) 
 {

@@ -37,13 +37,13 @@ add_executable (tests
 	request_test.cpp
 	writer_test.cpp
 	
-	../c-torrent/bencoder.cpp
-	../c-torrent/file_parser.cpp
-	../c-torrent/sha1.cpp
-	../c-torrent/socket.cpp
-	../c-torrent/peer.cpp
-	../c-torrent/torrent.cpp
-	../c-torrent/logger.cpp
+	../c-torrent/bencode/bencoder.cpp
+	../c-torrent/bencode/file_parser.cpp
+	../c-torrent/hash/sha1.cpp
+	../c-torrent/socket/socket.cpp
+	../c-torrent/torrent/peer.cpp
+	../c-torrent/torrent/torrent.cpp
+	../c-torrent/logger/logger.cpp
 	../c-torrent/async_writer.cpp)
 
 target_link_libraries(

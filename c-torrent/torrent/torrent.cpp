@@ -1,15 +1,15 @@
 
 #include "torrent.h"
-#include "bencoder.h"
-#include "logger.h"
+#include "../bencode/bencoder.h"
+#include "../logger/logger.h"
 
-#include "async_writer.h"
+#include "../async_writer.h"
 
 //#define CPPHTTPLIB_OPENSSL_SUPPORT
-#include "httplib/httplib.h"
-#include "socket.h"
+#include "../httplib/httplib.h"
+#include "../socket/socket.h"
 
-#include "hash.h" 
+#include "../hash/hash.h" 
 
 #include <iostream>
 #include <fstream>

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "metainfo.h"
+#include "../metainfo/metainfo.h"
 #include <vector>
 #include <string>
 
@@ -18,7 +18,7 @@ public:
 
     std::vector<Peer> request_get_peers();
     
-    std::string download_piece();
+    //std::string download_piece();
 
     void download (std::string file_name);
 

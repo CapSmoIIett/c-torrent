@@ -3,9 +3,9 @@
 #include <vector>
 #include <iostream>
 
-#include "socket.h"
-#include "metainfo.h"
-#include "async_writer.h"
+#include "../socket/socket.h"
+#include "../metainfo/metainfo.h"
+#include "../async_writer.h"
 
 
 struct Peer

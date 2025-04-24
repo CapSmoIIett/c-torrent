@@ -1,7 +1,7 @@
 
 #include <gtest/gtest.h>  
 
-#include"../c-torrent/sha1.h"
+#include"../c-torrent/hash/sha1.h"
 
 TEST(SHA1_TESTS, sha1_Test) 
 {
